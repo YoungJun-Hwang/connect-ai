@@ -7,7 +7,11 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
+    "start": "node --experimental-strip-types server/index.mjs",
+    "test": "node --experimental-strip-types --test scripts/saju.test.mjs scripts/topic-guide.test.mjs scripts/checkout-server.test.mjs",
     "test:saju": "node --experimental-strip-types --test scripts/saju.test.mjs",
+    "test:topics": "node --experimental-strip-types --test scripts/topic-guide.test.mjs",
+    "test:checkout": "node --experimental-strip-types --test scripts/checkout-server.test.mjs",
     "export:html": "node scripts/export-preview.mjs"
   },
   "dependencies": {

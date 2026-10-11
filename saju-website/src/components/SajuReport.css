@@ -275,6 +275,119 @@
   margin: 0;
   word-break: keep-all;
 }
+.saju-topic-uncertainty {
+  margin-top: 12px;
+  color: #876b39;
+}
+.saju-topic-uncertainty p {
+  margin: 0;
+  word-break: keep-all;
+}
+.saju-topic-evidence,
+.saju-topic-plan,
+.saju-topic-questions,
+.saju-topic-boundary {
+  margin-top: 24px;
+}
+.saju-topic-evidence h4,
+.saju-topic-plan h4,
+.saju-topic-questions h4,
+.saju-topic-boundary h4 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.saju-topic-evidence dl {
+  margin: 0;
+  padding: 17px 20px;
+  border: 1px solid #e4dce9;
+  border-radius: 12px;
+  background: #fcfafd;
+}
+.saju-topic-evidence dl > div + div {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee7f2;
+}
+.saju-topic-evidence dt {
+  margin-bottom: 4px;
+  color: #68528c;
+  font-weight: 500;
+}
+.saju-topic-evidence dd {
+  margin: 0;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.saju-topic-plan ol {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.saju-topic-plan li {
+  display: grid;
+  grid-template-columns: 57px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e9e1ee;
+  border-radius: 11px;
+}
+.saju-plan-day {
+  padding: 3px 6px;
+  text-align: center;
+  border-radius: 6px;
+  background: #f0e9f6;
+  color: #68528c;
+  font-size: 14px;
+  font-weight: 500;
+}
+.saju-topic-plan h5 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.saju-topic-plan li p {
+  margin: 0;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.saju-topic-questions {
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: #f6f1fa;
+}
+.saju-topic-questions ol {
+  margin: 0;
+  padding-left: 22px;
+}
+.saju-topic-questions li {
+  padding-left: 3px;
+  word-break: keep-all;
+}
+.saju-topic-questions li + li {
+  margin-top: 9px;
+}
+.saju-topic-boundary {
+  padding: 16px 18px;
+  border-left: 3px solid #dccdaa;
+  border-radius: 0 10px 10px 0;
+  background: #fffbf2;
+}
+.saju-topic-boundary h4 {
+  color: #876b39;
+  font-size: 15px;
+  margin-bottom: 7px;
+}
+.saju-topic-boundary p {
+  margin: 0;
+  color: #706477;
+  word-break: keep-all;
+}
 .saju-readings {
   display: grid;
   gap: 20px;
@@ -367,5 +480,18 @@
   }
   .saju-report h3 {
     font-size: 18px;
+  }
+  .saju-topic-evidence dl,
+  .saju-topic-questions {
+    padding: 16px;
+  }
+  .saju-topic-plan li {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    padding: 14px;
+  }
+  .saju-plan-day {
+    justify-self: start;
+    min-width: 57px;
   }
 }

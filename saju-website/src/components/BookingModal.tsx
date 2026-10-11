@@ -4,21 +4,34 @@ import {
   ArrowLeft,
   ArrowRight,
   BriefcaseBusiness,
+  BookOpen,
   Check,
+  Compass,
+  CreditCard,
   Download,
   Heart,
+  Leaf,
   LockKeyhole,
   Moon,
   RotateCcw,
   Sparkles,
+  Sprout,
+  Sun,
+  Users,
+  Wallet,
   X,
 } from "lucide-react";
+import { validateBirthInput, type SajuInput } from "../lib/saju";
+import { findProduct, formatKrw, products } from "../lib/catalog";
 import {
-  calculateSaju,
-  validateBirthInput,
-  type SajuInput,
-  type SajuResult,
-} from "../lib/saju";
+  createOrder,
+  getOrder,
+  getPaymentStatus,
+  pendingOrderKey,
+  type Order,
+  type PaymentStatus,
+  type PurchasedReport,
+} from "../lib/checkout";
 import SajuReport, { createReportText } from "./SajuReport";
 import "./BookingModal.css";
 
@@ -29,35 +42,21 @@ type BookingModalProps = {
   brandName?: string;
 };
 
-const products = [
-  {
-    name: "인생 사주",
-    icon: Moon,
-    caption: "나를 이해하는 시작",
-    description: "일간과 오행을 바탕으로 타고난 기질을 살펴봐요.",
-  },
-  {
-    name: "연애와 관계",
-    icon: Heart,
-    caption: "관계 속 나의 모습",
-    description: "내 사주에 나타난 관계의 관점을 읽어봐요.",
-  },
-  {
-    name: "올해의 흐름",
-    icon: Sparkles,
-    caption: "올해를 위한 참고",
-    description: "올해의 연주와 내 일간의 관계를 살펴봐요.",
-  },
-  {
-    name: "일과 재물",
-    icon: BriefcaseBusiness,
-    caption: "일상의 선택을 위한 힌트",
-    description: "오행과 십성으로 일과 재물의 관점을 읽어봐요.",
-  },
-];
+const topicIcons: Record<string, typeof Moon> = {
+  moon: Moon,
+  heart: Heart,
+  sun: Sun,
+  sprout: Sprout,
+  briefcase: BriefcaseBusiness,
+  wallet: Wallet,
+  book: BookOpen,
+  users: Users,
+  compass: Compass,
+  leaf: Leaf,
+};
 const storageKey = "dalbit-saju-input-v2";
 const legacyStorageKey = "saju-consultation-draft-v1";
-const stepLabels = ["주제 선택", "생일 입력", "사주 결과"];
+const stepLabels = ["주제 선택", "생일 입력", "주문 확인", "유료 리포트"];
 const emptyDetails = {
   name: "",
   birthDate: "",
@@ -107,10 +106,20 @@ export default function BookingModal({
   const wasOpen = useRef(false);
   closeRef.current = onClose;
   const [step, setStep] = useState(0);
-  const [product, setProduct] = useState(products[0].name);
+  const [product, setProduct] = useState(products[0].title);
   const [details, setDetails] = useState<Details>({ ...emptyDetails });
   const [errors, setErrors] = useState<Errors>({});
-  const [result, setResult] = useState<SajuResult | null>(null);
+  const [purchased, setPurchased] = useState<PurchasedReport | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(
+    null,
+  );
+  const [paymentBusy, setPaymentBusy] = useState(false);
+  const [paymentMessage, setPaymentMessage] = useState("");
+  const [orderConsent, setOrderConsent] = useState(false);
+  const [order, setOrder] = useState<Order | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState("");
+  const result = purchased?.result ?? null;
+  const selected = findProduct(product);
   const [saveLocally, setSaveLocally] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [hasCurrentSaved, setHasCurrentSaved] = useState(false);
@@ -120,13 +129,18 @@ export default function BookingModal({
     if (open && !wasOpen.current) {
       setStep(0);
       setProduct(
-        products.some((item) => item.name === initialProduct)
+        products.some((item) => item.title === initialProduct)
           ? initialProduct!
-          : products[0].name,
+          : products[0].title,
       );
       setDetails({ ...emptyDetails });
       setErrors({});
-      setResult(null);
+      setPurchased(null);
+      setPaymentStatus(null);
+      setPaymentMessage("");
+      setOrderConsent(false);
+      setOrder(null);
+      setCheckoutUrl("");
       setSaveLocally(false);
       setStorageMessage("");
       try {
@@ -142,6 +156,36 @@ export default function BookingModal({
     }
     wasOpen.current = open;
   }, [open, initialProduct]);
+
+  useEffect(() => {
+    if (!open) return;
+    let active = true;
+    getPaymentStatus()
+      .then(async (status) => {
+        if (!active) return;
+        setPaymentStatus(status);
+        if (!status.enabled) return;
+        let pending = null;
+        try {
+          pending = sessionStorage.getItem(pendingOrderKey);
+        } catch {
+          /* Optional recovery. */
+        }
+        if (pending) {
+          const checked = await getOrder(pending);
+          if (active) acceptOrder(checked);
+        }
+      })
+      .catch(() => {
+        if (active)
+          setPaymentMessage(
+            "구매 서비스 상태를 확인하지 못했어요. 잠시 후 다시 열어주세요.",
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -205,7 +249,7 @@ export default function BookingModal({
     }, 0);
   }
 
-  function calculate() {
+  function prepareOrder() {
     const nextErrors: Errors = {};
     const validationMessage = validateBirthInput(toSajuInput(details));
     if (validationMessage) {
@@ -225,19 +269,107 @@ export default function BookingModal({
           ?.focus();
       return;
     }
+    if (saveLocally) saveInput();
+    else setStorageMessage("이번 생일 입력은 이 브라우저에 저장하지 않았어요.");
+    setPurchased(null);
+    setOrderConsent(false);
+    goTo(2);
+  }
+
+  function forgetPendingOrder() {
     try {
-      const calculated = calculateSaju(toSajuInput(details));
-      setResult(calculated);
-      if (saveLocally) saveInput();
-      else setStorageMessage("이번 입력은 이 브라우저에 저장하지 않았어요.");
-      goTo(2);
-    } catch (error) {
-      setErrors({
-        general:
-          error instanceof Error
-            ? error.message
-            : "입력한 날짜를 계산하지 못했어요. 생일과 달력 기준을 확인해주세요.",
+      sessionStorage.removeItem(pendingOrderKey);
+    } catch {
+      /* Storage may be blocked. */
+    }
+  }
+
+  function acceptOrder(checked: Order) {
+    setProduct(findProduct(checked.productId).title);
+    setOrder(checked);
+    if (checked.status === "paid" && checked.report) {
+      setPurchased(checked.report);
+      setDetails({
+        ...emptyDetails,
+        ...checked.report.input,
+        name: checked.report.name,
+        birthTime: checked.report.input.birthTime ?? "",
+        unknownTime: checked.report.input.unknownTime === true,
+        leapMonth: checked.report.input.leapMonth === true,
+        dayBoundary: checked.report.input.dayBoundary ?? "midnight",
       });
+      setPaymentMessage(
+        "결제 승인을 확인했어요. 구매한 리포트를 열어드릴게요.",
+      );
+      goTo(3);
+    } else {
+      setPurchased(null);
+      goTo(2);
+      const messages = {
+        pending:
+          "아직 결제 승인이 확인되지 않았어요. 결제창에서 완료한 뒤 다시 확인해주세요.",
+        cancelled: "취소된 주문이에요. 결제 완료로 처리하지 않았습니다.",
+        refunded: "환불된 주문이에요. 새 리포트를 제공하지 않습니다.",
+        failed: "결제가 승인되지 않았어요. 다시 시도할 수 있습니다.",
+        paid: "구매한 리포트를 확인하지 못했어요.",
+      };
+      setPaymentMessage(messages[checked.status]);
+      if (checked.status !== "pending") {
+        forgetPendingOrder();
+        setOrder(null);
+        setCheckoutUrl("");
+      }
+    }
+  }
+
+  async function beginOrder() {
+    if (!paymentStatus?.enabled || !orderConsent || paymentBusy) return;
+    setPaymentBusy(true);
+    setPaymentMessage("");
+    try {
+      const created = await createOrder(
+        selected.id,
+        details.name.trim(),
+        toSajuInput(details),
+      );
+      setCheckoutUrl(created.checkoutUrl);
+      setOrder({
+        orderId: created.orderId,
+        productId: selected.id,
+        amount: created.amount,
+        currency: "KRW",
+        status: "pending",
+      });
+      try {
+        sessionStorage.setItem(pendingOrderKey, created.orderId);
+      } catch {
+        /* Recovery is optional. */
+      }
+      setPaymentMessage(
+        "주문이 준비됐어요. 결제창을 열고 결제를 진행해주세요.",
+      );
+    } catch (error) {
+      setPaymentMessage(
+        error instanceof Error ? error.message : "결제창을 준비하지 못했어요.",
+      );
+    } finally {
+      setPaymentBusy(false);
+    }
+  }
+
+  async function confirmOrder() {
+    if (!order || paymentBusy) return;
+    setPaymentBusy(true);
+    try {
+      acceptOrder(await getOrder(order.orderId));
+    } catch (error) {
+      setPaymentMessage(
+        error instanceof Error
+          ? error.message
+          : "결제 승인을 확인하지 못했어요.",
+      );
+    } finally {
+      setPaymentBusy(false);
     }
   }
 
@@ -302,7 +434,7 @@ export default function BookingModal({
         unknownTime: data.unknownTime !== false,
         dayBoundary: data.dayBoundary,
       });
-      if (products.some((item) => item.name === saved.product))
+      if (products.some((item) => item.title === saved.product))
         setProduct(saved.product);
       setSaveLocally(false);
       setStorageMessage(
@@ -317,13 +449,14 @@ export default function BookingModal({
   }
 
   function downloadReport() {
-    if (!result) return;
+    if (!result || !purchased || order?.status !== "paid") return;
     const text = createReportText(
       result,
       details.name.trim(),
       product,
       toSajuInput(details),
       brandName,
+      purchased.guide,
     );
     const url = URL.createObjectURL(
       new Blob(["\uFEFF", text], { type: "text/plain;charset=utf-8" }),
@@ -339,7 +472,12 @@ export default function BookingModal({
 
   function restart() {
     setDetails({ ...emptyDetails });
-    setResult(null);
+    setPurchased(null);
+    setOrder(null);
+    setCheckoutUrl("");
+    setPaymentMessage("");
+    setOrderConsent(false);
+    forgetPendingOrder();
     setSaveLocally(false);
     setStorageMessage("");
     goTo(0);
@@ -349,6 +487,7 @@ export default function BookingModal({
   const titles = [
     "어떤 이야기가 궁금한가요?",
     "생일을 알려주세요",
+    "구매할 리포트를 확인해주세요",
     `${details.name.trim()}님의 사주`,
   ];
 
@@ -360,7 +499,7 @@ export default function BookingModal({
       }}
     >
       <div
-        className={`booking-dialog${step === 2 ? " booking-dialog-report" : ""}`}
+        className={`booking-dialog${step === 3 ? " booking-dialog-report" : ""}`}
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
@@ -401,7 +540,9 @@ export default function BookingModal({
             ? "생년월일로 사주를 계산하고, 전통 명리의 관점에서 읽어봐요."
             : step === 1
               ? "1900년부터 오늘까지의 출생 정보를 입력할 수 있어요."
-              : `${product} · 입력한 생일로 계산한 나의 사주 원국입니다.`}
+              : step === 2
+                ? "가격과 제공 내용을 확인한 뒤 구매할 수 있어요."
+                : `${product} · 결제 승인을 확인한 개인 사주 리포트입니다.`}
         </p>
 
         {step === 0 && (
@@ -410,33 +551,39 @@ export default function BookingModal({
               <legend className="booking-visually-hidden">
                 사주 주제 선택
               </legend>
-              {products.map((item) => (
-                <label
-                  key={item.name}
-                  className={`booking-product ${product === item.name ? "is-selected" : ""}`}
-                >
-                  <input
-                    type="radio"
-                    name="consultationProduct"
-                    value={item.name}
-                    checked={product === item.name}
-                    onChange={() => setProduct(item.name)}
-                  />
-                  <span className="booking-product-top">
-                    <item.icon size={23} strokeWidth={1.5} />
-                    <span className="booking-radio-mark">
-                      {product === item.name && <Check size={10} />}
+              {products.map((item) => {
+                const Icon = topicIcons[item.icon] ?? Moon;
+                return (
+                  <label
+                    key={item.id}
+                    className={`booking-product ${product === item.title ? "is-selected" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="consultationProduct"
+                      value={item.title}
+                      checked={product === item.title}
+                      onChange={() => setProduct(item.title)}
+                    />
+                    <span className="booking-product-top">
+                      <Icon size={23} strokeWidth={1.5} />
+                      <span className="booking-radio-mark">
+                        {product === item.title && <Check size={10} />}
+                      </span>
                     </span>
-                  </span>
-                  <strong>{item.name}</strong>
-                  <span className="booking-product-caption">
-                    {item.caption}
-                  </span>
-                  <span className="booking-product-description">
-                    {item.description}
-                  </span>
-                </label>
-              ))}
+                    <strong>{item.title}</strong>
+                    <span className="booking-product-price">
+                      {formatKrw(item.priceKrw)} · 1회
+                    </span>
+                    <span className="booking-product-caption">
+                      {item.caption}
+                    </span>
+                    <span className="booking-product-description">
+                      {item.description}
+                    </span>
+                  </label>
+                );
+              })}
             </fieldset>
             {hasCurrentSaved && (
               <button
@@ -457,7 +604,7 @@ export default function BookingModal({
             noValidate
             onSubmit={(event) => {
               event.preventDefault();
-              calculate();
+              prepareOrder();
             }}
           >
             <div className="booking-field">
@@ -675,13 +822,111 @@ export default function BookingModal({
           </form>
         )}
 
-        {step === 2 && result && (
+        {step === 2 && (
+          <section className="checkout-summary" aria-label="주문 및 결제 확인">
+            <span className="checkout-badge">
+              {paymentStatus?.enabled ? "1회 구매" : "판매 준비 중"}
+            </span>
+            <h3>{selected.title}</h3>
+            <p>{selected.sampleNote}</p>
+            <ul className="checkout-includes">
+              {selected.includes.map((item) => (
+                <li key={item}>
+                  <Check size={15} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <dl className="checkout-totals">
+              <div>
+                <dt>이용 방식</dt>
+                <dd>선택한 주제의 개인 리포트 1회</dd>
+              </div>
+              {details.name && (
+                <div>
+                  <dt>입력한 생일</dt>
+                  <dd>
+                    {details.birthDate} ·{" "}
+                    {details.calendar === "solar"
+                      ? "양력"
+                      : `음력${details.leapMonth ? " 윤달" : ""}`}
+                  </dd>
+                </div>
+              )}
+              <div className="checkout-total">
+                <dt>결제 금액</dt>
+                <dd>{formatKrw(order?.amount ?? selected.priceKrw)}</dd>
+              </div>
+            </dl>
+            <p className="checkout-price-note">
+              판매 시작 전 임시 가격입니다. 자동 갱신되는 구독 상품이 아니에요.
+            </p>
+            <p className="checkout-delivery">
+              결제 승인 후 이 브라우저에서 리포트를 열고 텍스트로 내려받을 수
+              있어요. 기록과 실제 계산 근거를 함께 제공해요.
+            </p>
+            {!paymentStatus?.enabled && (
+              <div className="checkout-unavailable" role="status">
+                <LockKeyhole size={20} />
+                <div>
+                  <strong>지금은 결제되지 않아요</strong>
+                  <p>
+                    판매 준비가 끝난 뒤 구매할 수 있어요. 결제와 사업자 안내,
+                    환불 조건을 먼저 공개하겠습니다.
+                  </p>
+                </div>
+              </div>
+            )}
+            {paymentStatus?.enabled && !order && (
+              <label className="booking-storage-choice checkout-consent">
+                <input
+                  type="checkbox"
+                  checked={orderConsent}
+                  onChange={(event) => setOrderConsent(event.target.checked)}
+                />
+                <span>
+                  주문과 리포트 생성을 위한 정보 전달에 동의해요.
+                  <small>
+                    이름·생년월일·출생시간·선택 주제를 주문 서버로 전달합니다.
+                    카드 정보는 이 사이트에서 입력받지 않아요.
+                  </small>
+                </span>
+              </label>
+            )}
+            {order && (
+              <div className="checkout-order">
+                <p>
+                  주문 번호 <span>{order.orderId}</span>
+                </p>
+                <p>결제 승인이 확인되어야 전체 리포트가 열립니다.</p>
+                {checkoutUrl && (
+                  <a
+                    className="checkout-open button button-primary"
+                    href={checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    결제창 열기 <CreditCard size={17} />
+                  </a>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+
+        {step === 3 && result && purchased && order?.status === "paid" && (
           <SajuReport
             result={result}
             name={details.name.trim()}
             topic={product}
             input={toSajuInput(details)}
+            guide={purchased.guide}
           />
+        )}
+        {paymentMessage && (
+          <p className="checkout-message" role="status">
+            {paymentMessage}
+          </p>
         )}
         {storageMessage && (
           <p className="booking-storage-message" role="status">
@@ -700,15 +945,17 @@ export default function BookingModal({
         <div className="booking-notice">
           <LockKeyhole size={17} />
           <p>
-            입력 정보는 서버로 전송되지 않아요. 사주 해석은 전통 명리 규칙에
-            따른 참고 정보이며, 전문가 상담이나 예약·결제는 제공하지 않아요.
+            생일은 선택한 경우에만 브라우저에 저장해요. 구매를 진행하면 리포트
+            생성과 주문 확인을 위해 입력 정보가 주문 서버로 전달됩니다. 사주
+            풀이는 전통 명리의 참고 정보이며 전문가 상담 예약은 포함하지 않아요.
           </p>
         </div>
         <div className="booking-actions">
-          {step > 0 && (
+          {step > 0 && step < 3 && (
             <button
               className="booking-back"
               type="button"
+              disabled={paymentBusy || Boolean(order)}
               onClick={() => goTo(step === 2 ? 1 : 0)}
             >
               <ArrowLeft size={17} />
@@ -731,11 +978,32 @@ export default function BookingModal({
               type="submit"
               form={`${id}-details-form`}
             >
-              내 사주 계산하기
+              가격과 주문 확인하기
               <Sparkles size={18} />
             </button>
           )}
           {step === 2 && (
+            <button
+              className="booking-primary"
+              type="button"
+              disabled={
+                paymentBusy ||
+                !paymentStatus?.enabled ||
+                (!order && !orderConsent)
+              }
+              onClick={order ? confirmOrder : beginOrder}
+            >
+              {paymentBusy
+                ? "확인 중…"
+                : order
+                  ? "결제 완료 확인"
+                  : paymentStatus?.enabled
+                    ? "결제창 준비하기"
+                    : "결제 준비 중"}
+              <CreditCard size={18} />
+            </button>
+          )}
+          {step === 3 && (
             <button
               className="booking-primary"
               type="button"
@@ -746,7 +1014,7 @@ export default function BookingModal({
             </button>
           )}
         </div>
-        {step === 2 && (
+        {step === 3 && (
           <button className="booking-secondary" type="button" onClick={restart}>
             <RotateCcw size={17} />
             다른 사주 보기

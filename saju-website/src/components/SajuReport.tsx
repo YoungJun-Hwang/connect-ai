@@ -1,5 +1,6 @@
 import { useId } from "react";
 import type { SajuInput, SajuPillar, SajuResult } from "../lib/saju";
+import type { TopicGuide } from "../lib/topic-guide";
 import "./SajuReport.css";
 
 type ReportProps = {
@@ -7,24 +8,10 @@ type ReportProps = {
   name: string;
   topic: string;
   input: SajuInput;
+  guide: TopicGuide;
 };
 const elementOrder = ["목", "화", "토", "금", "수"] as const;
 const elementNames = { 목: "나무", 화: "불", 토: "흙", 금: "금속", 수: "물" };
-
-function topicReading(result: SajuResult, topic: string) {
-  const master = `${result.dayMaster.korean}(${result.dayMaster.chinese}) ${result.dayMaster.element}${result.dayMaster.yinYang === "양" ? " · 양" : " · 음"}`;
-  const visibleTenGods = result.pillars
-    .filter((pillar) => pillar.key !== "day" && !pillar.uncertain)
-    .map((pillar) => `${pillar.label} ${pillar.tenGod}`)
-    .join(", ");
-  if (topic === "연애와 관계")
-    return `나를 나타내는 일간은 ${master}입니다. 오행과 십성을 관계 속 내 표현 방식을 돌아보는 참고로 읽어보세요.${visibleTenGods ? ` 확정된 천간의 십성은 ${visibleTenGods}입니다.` : ""} 상대의 생일은 입력하지 않았으므로 두 사람의 궁합이나 만남의 시기를 판단하는 결과는 아닙니다.`;
-  if (topic === "일과 재물")
-    return `일간 ${master}을 기준으로 다른 천간과의 관계를 십성으로 표시했습니다.${visibleTenGods ? ` ${visibleTenGods}을 확인할 수 있어요.` : ""} 십성은 역할을 해석하는 전통 분류입니다. 재성이 있다고 수입을 예측하거나, 특정 오행이 적다고 직업을 단정할 수는 없어요. 실제 선택에는 경험과 현재 상황도 함께 고려해주세요.`;
-  if (topic === "올해의 흐름")
-    return `${result.annual.year}년의 연주는 ${result.annual.pillar.korean}(${result.annual.pillar.chinese})입니다. ${result.annual.interpretation} 이 항목은 올해 연주와 내 일간의 관계를 읽는 참고이며, 월별 사건이나 대운을 계산한 예측은 아닙니다.`;
-  return `나를 나타내는 일간은 ${master}입니다. 아래 원국의 천간과 지지를 함께 읽어보세요. 오행 개수는 눈에 보이는 글자의 기본 오행을 센 값입니다. 개수만으로 사주의 좋고 나쁨이나 용신을 정할 수는 없어요.`;
-}
 
 function PillarCard({ pillar }: { pillar: SajuPillar }) {
   return (
@@ -77,18 +64,19 @@ export function createReportText(
   topic: string,
   input: SajuInput,
   brandName: string,
+  guide: TopicGuide,
 ) {
   const dateBasis = `${input.calendar === "solar" ? "양력" : `음력${input.leapMonth ? " 윤달" : ""}`} ${input.birthDate}`;
   return [
     `${brandName} · ${name}님의 사주 결과`,
-    `주제: ${topic}`,
+    `주제: ${guide.title}`,
     `입력 생일: ${dateBasis}`,
     `환산 양력: ${result.solarDate}`,
     `환산 음력: ${result.lunarDate}`,
     `태어난 시간: ${result.birthTime ?? "모름 (시주 미계산)"}`,
     `하루 경계: ${result.dayBoundary === "zi" ? "23시" : "0시"}`,
     "",
-    "사주 원국 · 년 / 월 / 일 / 시",
+    "사주 원국 · 연 / 월 / 일 / 시",
     ...result.pillars.map(
       (pillar) =>
         `${pillar.label}: ${pillar.korean}(${pillar.chinese}) · 천간 ${pillar.stem.yinYang}${pillar.stem.element}, 지지 ${pillar.branch.yinYang}${pillar.branch.element} · 천간 십성 ${pillar.tenGod}${pillar.uncertain ? ` [미확정, ${pillar.referenceNote ?? "00:00 참고"}; 가능한 값 ${pillar.alternatives?.map((p) => `${p.korean}(${p.chinese})`).join(" / ")}]` : ""}`,
@@ -102,8 +90,23 @@ export function createReportText(
     `음양: 양 ${result.yinYang.yang} / 음 ${result.yinYang.yin}`,
     "지장간·계절 가중치를 포함하지 않은 단순 분포입니다. 신강·신약·용신 판단은 제공하지 않습니다.",
     "",
-    `[${topic}]`,
-    topicReading(result, topic),
+    `[구매한 주제의 참고 리포트 · ${guide.title}]`,
+    guide.summary,
+    "",
+    "이 주제의 계산 근거",
+    ...guide.evidence.map((item) => `${item.label}: ${item.text}`),
+    "",
+    "7일 실천 계획",
+    "아래 7일은 기록과 실천의 순서이며 길일이나 운의 시기를 계산한 일정이 아닙니다.",
+    ...guide.plan.map(
+      (step) => `${step.day}일차 · ${step.title}\n${step.action}`,
+    ),
+    "",
+    "자기점검 질문",
+    ...guide.questions.map((question, index) => `${index + 1}. ${question}`),
+    "",
+    "이 주제의 해석 범위",
+    guide.boundary,
     "",
     ...result.interpretations.flatMap((item) => [item.title, item.text, ""]),
     `${result.annual.year}년 연주: ${result.annual.pillar.korean}(${result.annual.pillar.chinese}) · ${result.annual.pillar.tenGod}`,
@@ -114,9 +117,11 @@ export function createReportText(
     ...result.calculationBasis.map((text) => `- ${text}`),
     "",
     "확인할 점",
-    ...result.warnings.map((text) => `- ${text}`),
+    ...[...new Set([...result.warnings, ...guide.uncertainty])].map(
+      (text) => `- ${text}`,
+    ),
     "",
-    "이 결과는 역법으로 계산한 원국과 전통 명리 규칙에 따른 참고 해석입니다. 개인의 미래나 사건을 확정하는 결과가 아닙니다. 전문가 상담·예약·결제는 진행되지 않았습니다.",
+    "이 파일은 구매한 주제의 참고 리포트입니다. 역법으로 계산한 원국과 전통 명리 규칙을 생활 기록의 질문에 연결했으며, 미래나 사건을 확정하는 결과가 아닙니다. 전문가의 개별 상담은 포함하지 않습니다.",
   ].join("\n");
 }
 
@@ -125,10 +130,14 @@ export default function SajuReport({
   name,
   topic,
   input,
+  guide,
 }: ReportProps) {
   const id = useId();
+  const topicWarnings = guide.uncertainty.filter(
+    (warning) => !result.warnings.includes(warning),
+  );
   return (
-    <div className="saju-report">
+    <div className="saju-report" data-report-topic={guide.productId}>
       <dl className="saju-birth-summary">
         <div>
           <dt>입력한 생일</dt>
@@ -173,7 +182,7 @@ export default function SajuReport({
       <section aria-labelledby={`${id}-chart`} className="saju-report-section">
         <h3 id={`${id}-chart`}>나의 사주 원국</h3>
         <p className="saju-section-intro">
-          년주부터 시주 순서로 표시해요. 일간은 나를 나타내는 기준입니다.
+          연주부터 시주 순서로 표시해요. 일간은 나를 나타내는 기준입니다.
         </p>
         <div className="saju-pillars">
           {result.pillars.map((pillar) => (
@@ -258,9 +267,60 @@ export default function SajuReport({
         aria-labelledby={`${id}-reading`}
         className="saju-report-section"
       >
-        <h3 id={`${id}-reading`}>{topic} · 읽어보기</h3>
+        <h3 id={`${id}-reading`}>{guide.title} · 주제 리포트</h3>
         <div className="saju-topic-reading">
-          <p>{topicReading(result, topic)}</p>
+          <p>{guide.summary}</p>
+        </div>
+        {topicWarnings.length > 0 && (
+          <div className="saju-topic-uncertainty">
+            {topicWarnings.map((warning) => (
+              <p key={warning}>{warning}</p>
+            ))}
+          </div>
+        )}
+        <div className="saju-topic-evidence">
+          <h4>이 주제의 계산 근거</h4>
+          <dl>
+            {guide.evidence.map((item) => (
+              <div key={item.label}>
+                <dt>{item.label}</dt>
+                <dd>{item.text}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="saju-topic-plan">
+          <h4>7일 실천 계획</h4>
+          <p className="saju-section-intro">
+            7일은 기록과 실천의 순서예요. 길일이나 운의 시기를 계산한 일정이
+            아닙니다.
+          </p>
+          <ol>
+            {guide.plan.map((step) => (
+              <li key={step.day}>
+                <span className="saju-plan-day">{step.day}일차</span>
+                <div>
+                  <h5>{step.title}</h5>
+                  <p>{step.action}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="saju-topic-questions">
+          <h4>자기점검 질문</h4>
+          <ol>
+            {guide.questions.map((question) => (
+              <li key={question}>{question}</li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="saju-topic-boundary">
+          <h4>이 주제의 해석 범위</h4>
+          <p>{guide.boundary}</p>
         </div>
         <div className="saju-readings">
           {result.interpretations.map((item) => (
