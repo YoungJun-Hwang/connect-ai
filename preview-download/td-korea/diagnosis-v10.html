@@ -1,0 +1,1181 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123a68">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>TD KOREA 현재 매장진단 V10</title>
+<style>
+:root{
+  --bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#667085;--line:#e3e8ef;
+  --brand:#123a68;--brand2:#245f9f;--soft:#edf4fb;--ok:#157347;--warn:#a15c00;
+  --danger:#b42318;--purple:#6941c6;--shadow:0 8px 24px rgba(18,58,104,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;line-height:1.5}
+button,input,select,textarea{font-family:inherit}
+header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.header{max-width:980px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:900;letter-spacing:-1px;flex:0 0 40px}
+.brand h1{font-size:17px;margin:0;white-space:nowrap}
+.brand p{font-size:11px;color:var(--muted);margin:1px 0 0}
+.wrap{max-width:980px;margin:auto;padding:16px 12px 96px}
+.hero{background:linear-gradient(135deg,#123a68,#245f9f);color:#fff;border-radius:18px;padding:19px;margin-bottom:14px}
+.hero h2{margin:0 0 6px;font-size:22px}.hero p{margin:0;font-size:12px;opacity:.88}
+.stepbar{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;position:sticky;top:63px;z-index:20;background:var(--bg)}
+.stepbar::-webkit-scrollbar{display:none}
+.stepchip{border:1px solid var(--line);background:#fff;color:#667085;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
+.stepchip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.stepchip.done{background:#e7f6ee;color:var(--ok);border-color:#cde9da}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.step{display:none}.step.active{display:block}
+h2{font-size:21px;margin:0 0 5px}h3{font-size:16px;margin:20px 0 9px}h4{font-size:13px;margin:14px 0 7px}
+.sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.full{grid-column:1/-1}
+label{font-size:12px;font-weight:800;color:#344054}
+.req{color:var(--danger)}
+input,select,textarea{width:100%;border:1px solid #cbd3df;border-radius:11px;padding:11px 12px;background:#fff;color:var(--ink);font-size:15px}
+textarea{min-height:88px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #c5d9ee;border-color:var(--brand2)}
+.hint{font-size:10px;color:var(--muted)}
+.divider{height:1px;background:var(--line);margin:18px 0}
+.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.check{display:flex;gap:8px;align-items:flex-start;padding:9px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe;font-size:12px}
+.check input{width:auto;margin-top:2px}
+.notice{border-left:4px solid var(--brand2);background:#f3f8fd;padding:11px 12px;border-radius:9px;font-size:12px;margin:12px 0}
+.notice.warn{border-left-color:#d98500;background:#fff8ea}.notice.ok{border-left-color:var(--ok);background:#eff9f4}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:16px}
+.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:900;cursor:pointer;min-height:44px}
+.primary{background:var(--brand);color:#fff}.secondary{background:#eaf0f7;color:#26384f}.ghost{background:#fff;border:1px solid var(--line);color:#344054}
+.contract,.supportbox,.liquorbox{border:1px solid var(--line);border-radius:13px;padding:13px;margin:10px 0;background:#fff}
+.contract-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;font-weight:900;margin-bottom:9px}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;background:#eef2f6;color:#475467;white-space:nowrap}
+.badge.ok{background:#e7f6ee;color:var(--ok)}.badge.warn{background:#fff1df;color:var(--warn)}.badge.danger{background:#ffebe9;color:var(--danger)}.badge.purple{background:#f1ecff;color:var(--purple)}
+.hidden{display:none!important}
+.support-actions{display:flex;gap:7px;flex-wrap:wrap}
+.lookup-panel{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe}
+.lookup-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.lookup-status{font-size:12px;color:var(--muted);margin-top:4px}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid #ccd6e2;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.support-result{border:1px solid var(--line);border-radius:13px;padding:13px;margin:10px 0;background:#fff}
+.support-result h4{margin:0 0 7px;font-size:14px}
+.support-meta{display:flex;gap:6px;flex-wrap:wrap;margin:5px 0 8px}
+.support-link{font-size:11px;word-break:break-all}
+.empty-result{padding:16px;border:1px dashed #cfd8e4;border-radius:12px;color:var(--muted);font-size:12px;text-align:center}
+
+.support-actions .btn{font-size:11px;padding:9px 11px}
+.calcbox{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.metric{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;min-width:0}
+.metric span{display:block;font-size:10px;color:var(--muted)}.metric b{display:block;font-size:18px;margin-top:4px;word-break:break-word}
+.progressline{height:9px;border-radius:999px;background:#e9edf3;overflow:hidden;margin-top:7px}
+.progressfill{height:100%;background:var(--brand2);width:0}
+.report section{border-top:1px solid var(--line);padding-top:17px;margin-top:17px}
+.report table{width:100%;border-collapse:collapse;font-size:12px}
+.report th,.report td{padding:8px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.report th{background:#f8fafc}
+.report ul{padding-left:20px}.report li{margin:5px 0}
+.topitem{display:grid;grid-template-columns:34px 1fr;gap:9px;margin:10px 0}
+.topnum{width:31px;height:31px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+.summarybox{border:1px solid #d7e2ef;background:#f8fbff;border-radius:13px;padding:13px}
+footer{text-align:center;color:var(--muted);font-size:10px;padding:8px}
+.mobilebar{display:none}
+.small{font-size:11px;color:var(--muted)}
+.record-status{font-size:10px;color:var(--muted);white-space:nowrap}
+.header-actions{display:flex;gap:6px;align-items:center}
+.header-actions .btn{padding:9px 10px;min-height:38px;font-size:11px}
+.record-banner{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:13px;padding:10px 12px;margin-bottom:10px}
+.record-banner b{font-size:12px}.record-banner span{font-size:10px;color:var(--muted)}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.48);display:none;align-items:flex-end;justify-content:center;padding:12px}
+.modal.show{display:flex}
+.modal-panel{background:#fff;width:min(720px,100%);max-height:86vh;border-radius:18px 18px 12px 12px;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{padding:14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.modal-body{padding:12px;overflow:auto}
+.record-search{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+.record-list{display:grid;gap:8px}
+.record-item{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff}
+.record-item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.record-item h4{margin:0;font-size:14px}
+.record-item .meta{font-size:10px;color:var(--muted);margin:3px 0 8px}
+.record-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.record-buttons button{font-size:11px;padding:8px 10px;min-height:36px}
+.save-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:120;background:#172033;color:#fff;padding:9px 12px;border-radius:999px;font-size:11px;display:none;max-width:88%;text-align:center}
+.save-toast.show{display:block}
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#98a2b3;margin-right:5px}.sync-dot.ok{background:#12b76a}.sync-dot.local{background:#f79009}
+
+@media(max-width:720px){.header-actions .hide-mobile{display:none}.record-banner{align-items:flex-start}.modal{padding:0;align-items:flex-end}.modal-panel{max-height:90vh;border-radius:18px 18px 0 0}
+  .header{padding:9px 10px}.brand p{display:none}.wrap{padding:10px 8px 92px}.hero{padding:16px;border-radius:14px}.hero h2{font-size:19px}
+  .stepbar{top:59px;padding-top:4px}.card{padding:14px;border-radius:14px}.grid,.grid3,.checkgrid,.calcbox{grid-template-columns:1fr}
+  input,select,textarea{font-size:16px}.actions{justify-content:stretch}.actions .btn{flex:1}.support-actions .btn{flex:1 1 45%}
+  .mobilebar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));gap:8px}
+  .mobilebar .btn{flex:1}
+}
+@media print{
+  body{background:#fff}.no-print,header,.hero,.stepbar,.mobilebar,footer{display:none!important}
+  .wrap{max-width:none;padding:0}.step{display:none!important}#step7{display:block!important}
+  .card{border:0;box-shadow:none;padding:0;margin:0}.report{font-size:11px}.report h2{font-size:20px}.report h3{font-size:15px;page-break-after:avoid}
+  .report section,.summarybox{break-inside:avoid}
+}
+
+.bm-header{background:#112c48;color:white;border-radius:14px;padding:22px;margin-bottom:18px}.bm-header h2{color:white}.bm-header p{color:#c4d8ea;font-size:13px}.bm-tag{font-size:10px;letter-spacing:2px;color:#7be0c2;font-weight:800}.bm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.bm-box{border:1px solid #dbe5eb;border-radius:12px;padding:16px;background:#fff;overflow-wrap:anywhere}.bm-box h3{margin:8px 0;font-size:17px}.bm-box p{font-size:13px}.bm-pill{display:inline-block;padding:4px 8px;background:#eaf6f1;color:#157347;border-radius:8px;font-size:11px}.bm-muted{color:#667085;font-size:12px}.bm-stat{font-size:23px;font-weight:800;color:#123a68}.bm-links{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}.bm-links a{color:#245f9f;font-weight:700}.bm-table{overflow:auto}.bm-table table{min-width:620px;width:100%;border-collapse:collapse;font-size:12px}.bm-table td,.bm-table th{padding:11px;border-bottom:1px solid #e3e8ef;text-align:left}.bm-editor summary{cursor:pointer;font-weight:700;padding:12px;background:#edf4fb;border-radius:8px}.bm-editor .grid{margin:12px 0}.bm-check{display:flex;gap:8px;align-items:center}.bm-check input{width:18px;height:18px}.bm-box.selected{border:2px solid #158169;background:#f6fcf9}#bmOutcome{margin-top:14px}.bm-warning{background:#fff4dc;border-radius:8px;padding:10px;font-size:12px}.bm-section{margin:22px 0}a{overflow-wrap:anywhere}@media(max-width:700px){.bm-grid{grid-template-columns:1fr}.bm-header{padding:17px}.bm-stat{font-size:20px}}@media print{.bm-grid{grid-template-columns:1fr 1fr}.bm-box{break-inside:avoid}.bm-table{overflow:visible}.bm-table table{min-width:0}.bm-editor{display:none}}
+.v9-group{margin:12px 0}.v9-question{padding:14px 0;border-bottom:1px solid #e3e8ef}.v9-question>b{font-size:14px}#v9Panel textarea{min-height:76px}.v9-scorebar{height:8px;background:#e8eef2;border-radius:8px;margin:8px 0}.v9-scorebar span{display:block;height:100%;background:#167967;border-radius:8px}#v9Scores{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.v9-report p{white-space:pre-wrap}@media print{.v9-report .bm-table{overflow:visible}.v9-report table{min-width:0}}
+</style>
+<style>[hidden],#splitVault{display:none!important}.split-banner{background:#e9f6f1;border:1px solid #c4e1d5;padding:18px;border-radius:14px;margin:15px 0}.split-link{color:#156e57;font-weight:800}.split-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.split-tools input[type=file]{width:auto;max-width:100%} .stepbar{max-width:100%}.hero h2{font-size:26px}.split-title{font-size:12px;color:#12765a;letter-spacing:1px}.split-note{font-size:12px;color:#526577}.split-progress{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.split-progress span{background:#e8eff6;border-radius:8px;padding:6px 10px;font-size:12px}@media print{.split-banner,.split-tools{display:none!important}}</style></head>
+<body>
+<header class="no-print">
+  <div class="header">
+    <div class="brand">
+      <div class="logo">TD</div>
+      <div><h1>TD KOREA 현재 매장진단</h1><p>기본현황 · 운영비 · 인사 · 지원 · 역량진단</p></div>
+    </div>
+    <div class="header-actions">
+      <span class="record-status hide-mobile" id="saveState"><span class="sync-dot"></span>미저장</span>
+      <button type="button" class="btn ghost" id="newRecordBtn">새 상담</button>
+      <button type="button" class="btn ghost" id="recordsBtn">저장목록</button>
+    </div>
+  </div>
+</header>
+<div class="website-v10-notice no-print" style="max-width:980px;margin:14px auto 0;padding:12px 16px;background:#edf4fb;border:1px solid #d8e3f0;border-radius:8px;color:#123a68;font-size:14px">현재 매장진단 V10 · 입력내용과 상담기록은 이 브라우저에 저장됩니다. 파일 백업으로 따로 보관할 수 있습니다. 서버 자동조회·전송은 연결 전입니다.</div>
+
+<main class="wrap">
+  <section class="hero no-print"><span class="split-title" style="color:#8ee1c5">STORE DIAGNOSIS / 02-PAGE WORKFLOW</span><h2>현재 매장의 상태부터 정확하게</h2><p>지금의 문제와 근거를 정리합니다. 실행계획과 성과관리는 별도 성장 페이지에서 진행합니다.</p></section>
+
+  <div class="record-banner no-print">
+    <div>
+      <b id="currentRecordTitle">새 상담</b><br>
+      <span id="currentRecordMeta">아직 저장되지 않은 상담입니다.</span>
+    </div>
+    <button type="button" class="btn primary" id="saveRecordBtn">상담 저장</button>
+  </div>
+
+  <nav class="stepbar no-print" id="stepbar">
+    <button type="button" class="stepchip active" data-step="1">1 기본정보</button>
+    <button type="button" class="stepchip" data-step="2">2 고정비·약정</button>
+    <button type="button" class="stepchip" data-step="3">3 주류</button>
+    <button type="button" class="stepchip" data-step="4">4 직원·4대보험</button>
+    <button type="button" class="stepchip" data-step="5">5 지역지원금</button>
+    <button type="button" class="stepchip" data-step="6">6 현재 역량진단</button>
+    <button type="button" class="stepchip" data-step="7">7 진단 리포트</button>
+  </nav>
+
+  <form id="form" autocomplete="off">
+    <section class="step active" id="step1">
+      <div class="card">
+        <h2>1. 사업장 기본정보</h2>
+        <div class="sub">고객 리포트에는 불필요한 개인정보를 출력하지 않습니다.</div>
+        <div class="grid">
+          <div class="field"><label>상담일</label><input id="date" type="date"></div>
+          <div class="field"><label>사업장명</label><input id="store" placeholder="예: OO식당"></div>
+          <div class="field"><label>업종 <span class="req">*</span></label><input id="industry" value="일반음식점" placeholder="예: 일반음식점"></div>
+          <div class="field"><label>사업형태</label><select id="businessType"><option>개인사업자</option><option>법인사업자</option><option>미확인</option></select></div>
+          <div class="field"><label>개업일</label><input id="opened" type="date"></div>
+          <div class="field"><label>월평균 매출</label><input id="monthlySales" type="number" min="0" placeholder="예: 50000000"></div>
+          <div class="field"><label>시·도 <span class="req">*</span></label><input id="sido" placeholder="예: 경기도"></div>
+          <div class="field"><label>시·군·구 <span class="req">*</span></label><input id="sigungu" placeholder="예: 김포시"></div>
+          <div class="field"><label>읍·면·동 <span class="small">(선택)</span></label><input id="dong" placeholder="예: 장기동"></div>
+          <div class="field full"><label>현재 가장 큰 고민</label><textarea id="concern" placeholder="예: 고정비 절감, 직원 구인, 매출증대"></textarea></div>
+        </div>
+      </div>
+      <div class="actions no-print"><button type="button" class="btn primary" data-next="2">다음</button></div>
+    </section>
+
+    <section class="step" id="step2">
+      <div class="card">
+        <h2>2. 고정비 · 약정 점검</h2>
+        <div class="sub">매달 반복되는 비용과 계약일을 함께 확인하면 교체·재협상 시점을 찾기 쉽습니다.</div>
+        <h3>기본 고정비</h3>
+        <div class="grid3">
+          <div class="field"><label>임차료 / 월</label><input data-cost="임차료" id="rent" type="number" min="0"></div>
+          <div class="field"><label>관리비 / 월</label><input data-cost="관리비" id="management" type="number" min="0"></div>
+          <div class="field"><label>고정 인건비 / 월</label><input data-cost="고정 인건비" id="payroll" type="number" min="0"></div>
+          <div class="field"><label>세무기장료 / 월</label><input data-cost="세무기장료" id="taxFee" type="number" min="0"></div>
+          <div class="field"><label>보험료 / 월</label><input data-cost="보험료" id="insuranceFee" type="number" min="0"></div>
+          <div class="field"><label>대출 이자 / 월</label><input data-cost="대출 이자" id="interest" type="number" min="0"></div>
+          <div class="field"><label>보안·경비 / 월</label><input data-cost="보안·경비" id="securityFee" type="number" min="0"></div>
+          <div class="field"><label>정기 구독 / 월</label><input data-cost="정기 구독" id="subscriptionFee" type="number" min="0"></div>
+          <div class="field"><label>기타 고정비 / 월</label><input data-cost="기타 고정비" id="otherFixed" type="number" min="0"></div>
+        </div>
+
+        <h3>약정형 운영비</h3>
+        <div id="contracts"></div>
+        <div class="notice warn">약정기간 계산은 계약일 + 약정개월의 1차 계산입니다. 실제 만료일·자동연장·위약금은 계약서 확인이 필요합니다.</div>
+      </div>
+      <div class="actions no-print"><button type="button" class="btn secondary" data-prev="1">이전</button><button type="button" class="btn primary" data-next="3">다음</button></div>
+    </section>
+
+    <section class="step" id="step3">
+      <div class="card">
+        <h2>3. 음식점 주류 거래 점검</h2>
+        <div class="sub">주류를 판매하지 않는 사업장은 ‘아니오’를 선택하면 관련 항목이 숨겨집니다.</div>
+        <div class="grid">
+          <div class="field"><label>주류 판매 여부</label><select id="liquorSale"><option>미확인</option><option>예</option><option>아니오</option></select></div>
+          <div class="field"><label>거래 주류업체</label><input id="liquorVendor" placeholder="업체명"></div>
+        </div>
+        <div id="liquorDetail" class="hidden">
+          <h3>주류대출</h3>
+          <div class="grid3">
+            <div class="field"><label>주류대출 이용 여부</label><select id="liquorLoan"><option>미확인</option><option>예</option><option>아니오</option></select></div>
+            <div class="field"><label>현재 남은 잔액</label><input id="liquorLoanBalance" type="number" min="0"></div>
+            <div class="field"><label>월 상환·공제액</label><input id="liquorLoanMonthly" type="number" min="0"></div>
+            <div class="field"><label>계약일</label><input id="liquorLoanDate" type="date"></div>
+            <div class="field full"><label>의무거래·중도상환 조건</label><textarea id="liquorLoanMemo" placeholder="계약서 기준으로 확인"></textarea></div>
+          </div>
+          <h3>참이슬 1박스 매입조건</h3>
+          <div class="grid3">
+            <div class="field"><label>공급가액 <span class="small">(부가세 별도)</span></label><input id="sojuSupply" type="number" min="0"></div>
+            <div class="field"><label>부가세</label><input id="sojuVat" type="number" min="0"></div>
+            <div class="field"><label>박스당 병수</label><input id="sojuQty" type="number" min="0" placeholder="예: 20"></div>
+            <div class="field"><label>병당 보증금</label><input id="bottleDeposit" type="number" min="0"></div>
+            <div class="field"><label>박스 보증금 합계</label><input id="boxDeposit" type="number" readonly=""></div>
+            <div class="field"><label>1박스 총 지급액</label><input id="sojuTotal" type="number" readonly=""></div>
+          </div>
+          <div class="notice">주류 매입비는 임차료 같은 고정비와 달리 매출에 따라 변하는 비용이므로 고정비 총액과 분리해 표시합니다.</div>
+        </div>
+      </div>
+      <div class="actions no-print"><button type="button" class="btn secondary" data-prev="2">이전</button><button type="button" class="btn primary" data-next="4">다음</button></div>
+    </section>
+
+    <section class="step" id="step4">
+      <div class="card">
+        <h2>4. 직원 · 4대보험 점검</h2>
+        <div class="grid">
+          <div class="field"><label>직원 고용 여부</label><select id="hasEmployees"><option>미확인</option><option>예</option><option>아니오</option></select></div>
+          <div class="field"><label>현재 직원 수</label><input id="employeeCount" type="number" min="0"></div>
+          <div class="field"><label>4대보험 가입 여부</label><select id="fourInsured"><option>미확인</option><option>전원 가입</option><option>일부 가입</option><option>미가입</option></select></div>
+          <div class="field"><label>4대보험 가입 직원 수</label><input id="insuredCount" type="number" min="0"></div>
+          <div class="field"><label>월평균 보수 270만원 미만 직원</label><input id="under270Count" type="number" min="0"></div>
+          <div class="field"><label>최근 신규가입 직원 수</label><input id="newSubscriberCount" type="number" min="0"></div>
+          <div class="field"><label>대표자 자영업자 고용보험</label><select id="ownerEI"><option>미확인</option><option>가입</option><option>미가입</option></select></div>
+          <div class="field"><label>두루누리 이용 여부</label><select id="durunuri"><option>미확인</option><option>이용 중</option><option>미이용</option></select></div>
+        </div>
+        <div class="notice warn">4대보험 가입 또는 신규채용만으로 지원금 수급이 확정되지는 않습니다. 고용보험 이력, 보수, 사업장 규모, 신청기한 및 최신 공고를 추가 확인합니다.</div>
+      </div>
+      <div class="actions no-print"><button type="button" class="btn secondary" data-prev="3">이전</button><button type="button" class="btn primary" data-next="5">다음</button></div>
+    </section>
+
+    <section class="step" id="step5">
+      <div class="card">
+        <h2>5. 지역 지원금 · 지원공고 자동조회</h2>
+        <div class="sub">입력한 지역·업종·업력·매출·직원 정보를 바탕으로 최신 공식공고를 자동으로 찾아 분류합니다. 상담자가 지원사업명을 직접 입력하지 않습니다.</div>
+
+        <div class="lookup-panel">
+          <div class="lookup-head">
+            <div>
+              <b id="lookupTarget">조회 조건을 준비 중입니다.</b>
+              <div class="lookup-status" id="lookupStatus">지역·업종을 입력해 확인할 조건을 정리하세요. 자동조회 서버는 연결 전입니다.</div>
+            </div>
+            <button type="button" class="btn primary no-print" id="autoLookupBtn" disabled>자동조회 연결 전</button>
+          </div>
+        </div>
+
+        <div class="notice">
+          지원사업 자동조회 서버는 현재 연결 전입니다. 실제 조회 연결 후에는 공식 공고의 대상조건·신청기간을 확인해야 합니다.
+        </div>
+
+        <div id="supportResults">
+          <div class="empty-result">자동조회 서버 연결 전입니다. 다른 진단 입력과 리포트 생성은 이용할 수 있습니다.</div>
+        </div>
+
+        <div class="notice warn">
+          공고가 검색되었다는 사실만으로 신청 가능성이 확정되지는 않습니다. 업종, 업력, 매출, 상시근로자, 체납, 중복지원, 신청기간 등 세부요건을 공고 원문과 대조한 뒤 최종 판단합니다.
+          반복 사업도 다음 해 동일하게 시행된다고 확정하지 않고 최근 여러 해의 공고 이력이 확인될 때만 ‘반복 확인 대상’으로 표시합니다.
+        </div>
+      </div>
+      <div class="actions no-print"><button type="button" class="btn secondary" data-prev="4">이전</button><button type="button" class="btn primary" data-next="6">다음</button></div>
+    </section>
+
+    <section class="step" id="step6"><div class="card" id="splitDiagnosis"><div class="bm-header"><span class="bm-tag">TD KOREA / DIAGNOSIS TO RESULTS</span><h2>현재 역량 · 문제와 근거</h2><p>현재 상태를 근거로 확인하고, 30·60·90일 후 실제 변화를 기록합니다.</p></div><div class="notice">출처: 첨부 「2023년 소상공인 성공드림 컨설팅 우수사례집」 7개 사례, 본문 pp.2–29 (PDF 15면). 5개 역량과 진단→개선→사후관리 구조를 참고했습니다. 아래 30개 질문·채점기준·자동 제안은 TD KOREA가 새로 구성한 상담 도구이며 원문의 공식 평가표가 아닙니다.</div>
+<div class="grid"><div class="field"><label for="v9Route">이번 상담 방향</label><select id="v9Route"><option value="improve">현사업 개선</option><option value="channel">기존 역량 활용·채널 확대</option><option value="review">유지·축소·전환 비교 검토</option></select></div><div class="field"><label for="v9Hours">대표자가 개선에 쓸 수 있는 시간 (주당 시간)</label><input id="v9Hours" type="number" min="0"></div><div class="field"><label for="v9Problem">점주가 말한 핵심 문제·희망 결과</label><textarea id="v9Problem"></textarea></div><div class="field"><label for="v9Cause">관찰한 원인 / 아직 검증하지 못한 가설</label><textarea id="v9Cause"></textarea></div><div class="field"><label for="v9Strength">활용 가능한 강점 (기술·거래처·설비·경력)</label><textarea id="v9Strength"></textarea></div><div class="field"><label for="v9Constraints">제약조건 (예산·인력·건강·가족·계약·공간)</label><textarea id="v9Constraints"></textarea></div></div><h3>01. 5개 역량 · 30개 진단 질문</h3><p class="bm-muted">미확인 / 해당 없음 / 1 미실행 / 2 비정기 실행 / 3 기준은 있으나 미측정 / 4 기록·정기 관리 / 5 성과 확인·개선 반복. 미확인·해당 없음은 평균에서 제외합니다. 자기평가와 증빙 확인을 구분하고, 평가 질문은 전후 동일하게 유지하세요.</p><div id="v9Scores" class="bm-grid"></div><details class="bm-editor v9-group"><summary>1. 상품·서비스 · 6문항</summary><p class="bm-muted">관련 사례 본문 pp.2–5·14–17 · 항목별 증빙은 아래 공통 메모에 질문 번호와 함께 기록</p><div class="v9-question"><b>01. 대표상품·핵심 서비스와 고객이 선택하는 이유가 명확한가?</b><p class="bm-muted">확인자료: 판매 상위 5개·고객 선택 이유</p><div class="grid"><div class="field"><label for="v9Q0B">진단 전 점수</label><select id="v9Q0B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>02. 상품별 판매가·재료비·수수료를 기록하는가?</b><p class="bm-muted">확인자료: 상품 원가표·POS 품목매출</p><div class="grid"><div class="field"><label for="v9Q1B">진단 전 점수</label><select id="v9Q1B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>03. 품질·분량·작업순서가 표준화되어 있는가?</b><p class="bm-muted">확인자료: 레시피·서비스 표준서</p><div class="grid"><div class="field"><label for="v9Q2B">진단 전 점수</label><select id="v9Q2B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>04. 차별화 주장을 입증할 자료가 있는가?</b><p class="bm-muted">확인자료: 경력·원산지·실제 작업 사진</p><div class="grid"><div class="field"><label for="v9Q3B">진단 전 점수</label><select id="v9Q3B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>05. 신상품을 소규모로 시험하고 반응을 기록하는가?</b><p class="bm-muted">확인자료: 시험 판매량·원가·고객 반응</p><div class="grid"><div class="field"><label for="v9Q4B">진단 전 점수</label><select id="v9Q4B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>06. 대표자 가용시간과 생산능력에 맞게 상품·서비스를 구성하는가?</b><p class="bm-muted">확인자료: 작업시간·일일 수용량</p><div class="grid"><div class="field"><label for="v9Q5B">진단 전 점수</label><select id="v9Q5B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="field"><label for="v9Evidence0">증빙·현장 관찰·해당 없음 사유 (질문 번호 포함)</label><textarea id="v9Evidence0"></textarea></div></details><details class="bm-editor v9-group"><summary>2. 고객응대 · 6문항</summary><p class="bm-muted">관련 사례 본문 pp.2–3·14–17 · 항목별 증빙은 아래 공통 메모에 질문 번호와 함께 기록</p><div class="v9-question"><b>07. 핵심 고객의 방문 목적과 구매 결정요인을 파악하는가?</b><p class="bm-muted">확인자료: 고객 인터뷰·방문목적</p><div class="grid"><div class="field"><label for="v9Q6B">진단 전 점수</label><select id="v9Q6B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>08. 문의→예약→방문→구매의 누락을 기록하는가?</b><p class="bm-muted">확인자료: 문의·예약·결제 기록</p><div class="grid"><div class="field"><label for="v9Q7B">진단 전 점수</label><select id="v9Q7B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>09. 응대·예약 변경·불만처리 기준이 있는가?</b><p class="bm-muted">확인자료: 응대 매뉴얼·불만 기록</p><div class="grid"><div class="field"><label for="v9Q8B">진단 전 점수</label><select id="v9Q8B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>10. 고객 동의 범위에서 재방문 관리가 이루어지는가?</b><p class="bm-muted">확인자료: 동의·재방문 관리 방식</p><div class="grid"><div class="field"><label for="v9Q9B">진단 전 점수</label><select id="v9Q9B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>11. 대표자가 없어도 직원이 같은 수준으로 응대하는가?</b><p class="bm-muted">확인자료: 교육기록·역할 분담</p><div class="grid"><div class="field"><label for="v9Q10B">진단 전 점수</label><select id="v9Q10B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>12. 불만의 원인을 개선하고 재발 여부를 확인하는가?</b><p class="bm-muted">확인자료: 개선 전후 불만 건수</p><div class="grid"><div class="field"><label for="v9Q11B">진단 전 점수</label><select id="v9Q11B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="field"><label for="v9Evidence1">증빙·현장 관찰·해당 없음 사유 (질문 번호 포함)</label><textarea id="v9Evidence1"></textarea></div></details><details class="bm-editor v9-group"><summary>3. 마케팅 · 6문항</summary><p class="bm-muted">관련 사례 본문 pp.6–9·14–17 · 항목별 증빙은 아래 공통 메모에 질문 번호와 함께 기록</p><div class="v9-question"><b>13. 지역·고객군·구매 목적에 맞춘 타깃을 정하는가?</b><p class="bm-muted">확인자료: 상권·고객군 분석</p><div class="grid"><div class="field"><label for="v9Q12B">진단 전 점수</label><select id="v9Q12B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>14. 동일 업종 경쟁매장과 차별점을 비교하는가?</b><p class="bm-muted">확인자료: 매장 3곳·가격·메뉴·출처</p><div class="grid"><div class="field"><label for="v9Q13B">진단 전 점수</label><select id="v9Q13B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>15. 플레이스의 메뉴·사진·영업·방문 안내가 정확한가?</b><p class="bm-muted">확인자료: 페이지 주소·확인일</p><div class="grid"><div class="field"><label for="v9Q14B">진단 전 점수</label><select id="v9Q14B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>16. 검색·콘텐츠→문의→매출의 연결을 측정하는가?</b><p class="bm-muted">확인자료: 채널 유입·문의·전환</p><div class="grid"><div class="field"><label for="v9Q15B">진단 전 점수</label><select id="v9Q15B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>17. 홍보비 대비 신규고객·공헌이익을 확인하는가?</b><p class="bm-muted">확인자료: 광고비·신규고객·귀속매출</p><div class="grid"><div class="field"><label for="v9Q16B">진단 전 점수</label><select id="v9Q16B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>18. 콘텐츠·온라인 판매를 운영할 시간과 계획이 있는가?</b><p class="bm-muted">확인자료: 월간 일정·담당·배송능력</p><div class="grid"><div class="field"><label for="v9Q17B">진단 전 점수</label><select id="v9Q17B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="field"><label for="v9Evidence2">증빙·현장 관찰·해당 없음 사유 (질문 번호 포함)</label><textarea id="v9Evidence2"></textarea></div></details><details class="bm-editor v9-group"><summary>4. 구매·재고 · 6문항</summary><p class="bm-muted">관련 사례 본문 pp.2–3·18–21·24–25 · 항목별 증빙은 아래 공통 메모에 질문 번호와 함께 기록</p><div class="v9-question"><b>19. 주요 공급처의 단가·품질·납기를 비교하는가?</b><p class="bm-muted">확인자료: 견적·거래명세서</p><div class="grid"><div class="field"><label for="v9Q18B">진단 전 점수</label><select id="v9Q18B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>20. 재고 수량·보관조건·사용기한을 기록하는가?</b><p class="bm-muted">확인자료: 재고장·보관 점검</p><div class="grid"><div class="field"><label for="v9Q19B">진단 전 점수</label><select id="v9Q19B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>21. 판매량에 맞춘 발주·적정 재고 기준이 있는가?</b><p class="bm-muted">확인자료: 판매기록·발주 기준</p><div class="grid"><div class="field"><label for="v9Q20B">진단 전 점수</label><select id="v9Q20B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>22. 폐기·분실·품절의 수량과 원가를 기록하는가?</b><p class="bm-muted">확인자료: 폐기 원가·품절 횟수</p><div class="grid"><div class="field"><label for="v9Q21B">진단 전 점수</label><select id="v9Q21B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>23. 공동구매·대체 공급처·기존 설비 활용을 검토하는가?</b><p class="bm-muted">확인자료: 대체 견적·설비 목록</p><div class="grid"><div class="field"><label for="v9Q22B">진단 전 점수</label><select id="v9Q22B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>24. 채널 확대 시 포장·배송·반품 원가를 계산하는가?</b><p class="bm-muted">확인자료: 배송·포장·반품 내역</p><div class="grid"><div class="field"><label for="v9Q23B">진단 전 점수</label><select id="v9Q23B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="field"><label for="v9Evidence3">증빙·현장 관찰·해당 없음 사유 (질문 번호 포함)</label><textarea id="v9Evidence3"></textarea></div></details><details class="bm-editor v9-group"><summary>5. 매장·운영 · 6문항</summary><p class="bm-muted">관련 사례 본문 pp.4–5·10–13·26–29 · 항목별 증빙은 아래 공통 메모에 질문 번호와 함께 기록</p><div class="v9-question"><b>25. 입구·간판·주차·찾아오는 길이 명확한가?</b><p class="bm-muted">확인자료: 외부 사진·방문 불편</p><div class="grid"><div class="field"><label for="v9Q24B">진단 전 점수</label><select id="v9Q24B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>26. 제조·판매·보관 동선과 공간이 구분되는가?</b><p class="bm-muted">확인자료: 평면도·작업 동선</p><div class="grid"><div class="field"><label for="v9Q25B">진단 전 점수</label><select id="v9Q25B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>27. 에너지 사용량과 공실·유휴시간을 관리하는가?</b><p class="bm-muted">확인자료: 전기·가스 사용량·요금</p><div class="grid"><div class="field"><label for="v9Q26B">진단 전 점수</label><select id="v9Q26B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>28. 전기·가스·화재 등 안전 점검과 교육기록이 있는가?</b><p class="bm-muted">확인자료: 점검표·교육기록</p><div class="grid"><div class="field"><label for="v9Q27B">진단 전 점수</label><select id="v9Q27B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>29. 인력·업무·자동화 투자의 비용과 회수 가능성을 계산하는가?</b><p class="bm-muted">확인자료: 근무시간·견적·절감 근거</p><div class="grid"><div class="field"><label for="v9Q28B">진단 전 점수</label><select id="v9Q28B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="v9-question"><b>30. 손익과 대표자 사정을 고려해 유지·전환 대안을 검토하는가?</b><p class="bm-muted">확인자료: 손익·가용시간·대안 비교</p><div class="grid"><div class="field"><label for="v9Q29B">진단 전 점수</label><select id="v9Q29B"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></div><div class="field"><label for="v9Evidence4">증빙·현장 관찰·해당 없음 사유 (질문 번호 포함)</label><textarea id="v9Evidence4"></textarea></div></details><p class="bm-muted">점수는 확인된 문항의 단순 평균입니다. 낮은 점수는 조사 우선순위이며 매출·성공 가능성 등급이 아닙니다. 실행 후 평가는 별도 성장 페이지에서 확인합니다.</p>
+<div class="split-banner no-print"><b>진단 완료 후 성장계획으로 이어가세요</b><p class="split-note">현재 상태와 5개 역량을 확인한 뒤 진단정보를 내보내세요. 성장 페이지에서 불러오면 다시 입력할 필요가 없습니다.</p><div class="split-tools"><button id="splitExport" type="button" class="btn primary">성장계획용 진단정보 내보내기</button><a class="btn secondary" href="TD_KOREA_우리매장_성장플랜_V10.html">성장플랜 열기 ↗</a></div><p class="split-note">두 HTML 파일을 같은 폴더에 두면 서로 이동할 수 있습니다. 데이터 전달은 JSON 파일을 사용하며, 두 페이지의 상담기록은 따로 저장됩니다.</p><div id="splitTransferStatus" aria-live="polite"></div></div><div class="split-tools"><button type="button" id="splitBackup" class="btn secondary">현재 상담 전체 백업</button><label class="btn secondary">V8·V9·V10 백업 불러오기<input type="file" id="splitFullImport" accept="application/json" hidden=""></label></div></div>
+      
+
+
+      <div class="actions no-print"><button type="button" class="btn secondary" data-prev="5">이전</button><button type="button" class="btn primary" id="reportBtn">진단 리포트 생성</button></div>
+    </section>
+
+    <section class="step" id="step7">
+      <div class="card report" id="reportCard">
+        <div id="report"><h2>진단 리포트가 아직 생성되지 않았습니다.</h2></div>
+      </div>
+      <div class="actions no-print">
+        <button type="button" class="btn secondary" data-prev="6">입력 수정</button>
+        <button type="button" class="btn ghost" id="mailBtn">메일로 보내기</button>
+        <button type="button" class="btn primary" id="pdfBtn">PDF 저장 / 인쇄</button>
+      </div>
+    </section>
+  <div id="splitVault" hidden=""><div class="card" id="benchmarkPanel"><div class="bm-header"><span class="bm-tag">TD KOREA / GROWTH CONSULTING</span><h2>우리 매장에 맞는 성장 방법</h2><p>인근 사례 → 실행 가능성 → 투자비용 → 30·90일 성과 확인</p></div>
+<div class="notice">기본정보의 지역·업종·매출·직원 수를 함께 사용합니다. 이 파일은 조사된 사례와 규칙 기반 상담 도구입니다. 전국 매장 실시간 수집·AI 자동검색 기능은 연결되어 있지 않습니다.</div>
+<div class="grid"><div class="field"><label for="bmCategory">세부 업종 (일반음식점은 반드시 구체화)</label><select id="bmCategory"><option value="">업종에서 자동분류</option><option>한식</option><option>고깃집</option><option>카페</option><option>치킨·배달</option><option>주점</option><option>미용실</option><option>정육점</option><option>소매점</option></select></div><div class="field"><label for="bmArea">영업면적 (평)</label><input id="bmArea" type="number" min="0"></div><div class="field"><label for="bmSeats">좌석 / 시술석 수</label><input id="bmSeats" type="number" min="0"></div><div class="field"><label for="bmBudget">초기 실행예산 (원)</label><input id="bmBudget" type="number" min="0" placeholder="미입력은 예산 미확인"></div><div class="field"><label for="bmMonthlyBudget">월 추가비용 한도 (원)</label><input id="bmMonthlyBudget" type="number" min="0"></div><div class="field"><label for="bmRadius">비교 희망 반경 (km)</label><input id="bmRadius" type="number" min="0.1" step="0.1" placeholder="예: 3"></div></div><div class="actions"><button type="button" class="btn secondary" id="bmExample">김포 한식 예시 상담 넣기</button><button type="button" class="btn primary" id="bmRefresh">비교·실행방안 갱신</button></div><div id="bmContext" class="notice"></div><h3>01. 벤치마킹 후보</h3><p class="bm-muted">실제 매출·순위·규모는 미확인입니다. 같은 시의 참고 후보이며, 반경 내 매장인지는 지도에서 확인하세요. 확인일 2026.10.09 · 후기는 관찰 근거이며 성과 입증이 아닙니다.</p><div id="bmSearch" class="bm-links"></div><div id="bmCandidates" class="bm-grid"></div>
+<details class="bm-editor"><summary>다른 지역·업종 후보 등록 / 현장 확인 (최대 3곳)</summary><p class="bm-muted">검색 링크에서 매장을 확인하고 등록하세요. 지역·세부업종이 일치한 후보만 리포트에 표시합니다.</p><h3>직접 조사 후보 1</h3><div class="grid"><div class="field"><label for="bmC0Name">매장명</label><input id="bmC0Name" type="text"></div><div class="field"><label for="bmC0Region">지역 (기본정보 시·군·구와 동일)</label><input id="bmC0Region" type="text"></div><div class="field"><label for="bmC0Category">세부업종 (한식·카페 등 위 선택명과 동일)</label><input id="bmC0Category" type="text"></div><div class="field"><label for="bmC0Address">주소</label><input id="bmC0Address" type="text"></div><div class="field"><label for="bmC0Url">출처 URL</label><input id="bmC0Url" type="url" placeholder="https://…"></div><div class="field"><label for="bmC0Date">확인일</label><input id="bmC0Date" type="date"></div><div class="field"><label for="bmC0Distance">우리 매장과 거리 (km)</label><input id="bmC0Distance" type="number" min="0" step="0.1"></div><div class="field"><label for="bmC0Area">영업면적 (평)</label><input id="bmC0Area" type="number" min="0"></div><div class="field"><label for="bmC0Fact">직접 확인한 특징</label><input id="bmC0Fact" type="text"></div><div class="field"><label for="bmC0Idea">우리 매장 적용 제안</label><input id="bmC0Idea" type="text"></div></div><h3>직접 조사 후보 2</h3><div class="grid"><div class="field"><label for="bmC1Name">매장명</label><input id="bmC1Name" type="text"></div><div class="field"><label for="bmC1Region">지역 (기본정보 시·군·구와 동일)</label><input id="bmC1Region" type="text"></div><div class="field"><label for="bmC1Category">세부업종 (한식·카페 등 위 선택명과 동일)</label><input id="bmC1Category" type="text"></div><div class="field"><label for="bmC1Address">주소</label><input id="bmC1Address" type="text"></div><div class="field"><label for="bmC1Url">출처 URL</label><input id="bmC1Url" type="url" placeholder="https://…"></div><div class="field"><label for="bmC1Date">확인일</label><input id="bmC1Date" type="date"></div><div class="field"><label for="bmC1Distance">우리 매장과 거리 (km)</label><input id="bmC1Distance" type="number" min="0" step="0.1"></div><div class="field"><label for="bmC1Area">영업면적 (평)</label><input id="bmC1Area" type="number" min="0"></div><div class="field"><label for="bmC1Fact">직접 확인한 특징</label><input id="bmC1Fact" type="text"></div><div class="field"><label for="bmC1Idea">우리 매장 적용 제안</label><input id="bmC1Idea" type="text"></div></div><h3>직접 조사 후보 3</h3><div class="grid"><div class="field"><label for="bmC2Name">매장명</label><input id="bmC2Name" type="text"></div><div class="field"><label for="bmC2Region">지역 (기본정보 시·군·구와 동일)</label><input id="bmC2Region" type="text"></div><div class="field"><label for="bmC2Category">세부업종 (한식·카페 등 위 선택명과 동일)</label><input id="bmC2Category" type="text"></div><div class="field"><label for="bmC2Address">주소</label><input id="bmC2Address" type="text"></div><div class="field"><label for="bmC2Url">출처 URL</label><input id="bmC2Url" type="url" placeholder="https://…"></div><div class="field"><label for="bmC2Date">확인일</label><input id="bmC2Date" type="date"></div><div class="field"><label for="bmC2Distance">우리 매장과 거리 (km)</label><input id="bmC2Distance" type="number" min="0" step="0.1"></div><div class="field"><label for="bmC2Area">영업면적 (평)</label><input id="bmC2Area" type="number" min="0"></div><div class="field"><label for="bmC2Fact">직접 확인한 특징</label><input id="bmC2Fact" type="text"></div><div class="field"><label for="bmC2Idea">우리 매장 적용 제안</label><input id="bmC2Idea" type="text"></div></div></details><h3>02. 즉시 적용 · 중장기 실행과제</h3><p class="bm-muted">금액은 외부 견적이 아닌 TD KOREA 상담용 예산 가정입니다. 초기비용·월비용을 분리하며, 자가 작업시간과 부가세는 별도입니다. 실제 견적을 받아 확정하세요. 여러 과제의 효과는 단순 합산하지 않습니다.</p><div id="bmPlans" class="bm-grid"></div><input type="checkbox" id="bmPick0" hidden=""><input type="checkbox" id="bmPick1" hidden=""><input type="checkbox" id="bmPick2" hidden=""><input type="checkbox" id="bmPick3" hidden=""><div id="bmSelection" class="notice"></div>
+<h3>03. 비용 대비 기대결과</h3><p class="bm-muted">보수·기준·확대는 확률 예측이 아닌 입력 가정의 0.5·1·1.5배 시나리오입니다. 할인과 변동원가를 공헌이익률에 반영하고 기존 고정비를 제외한 증분 이익을 계산합니다.</p><div class="grid"><div class="field"><label for="bmVisits">기준: 결제건수 증가 가정 (%)</label><input id="bmVisits" type="number" min="0" max="100"></div><div class="field"><label for="bmTicket">기준: 객단가 증가 가정 (%)</label><input id="bmTicket" type="number" min="0" max="100"></div><div class="field"><label for="bmMargin">추가매출 공헌이익률 (%)</label><input id="bmMargin" type="number" min="0" max="100"></div><div class="field"><label for="bmCap">하루 추가 처리 가능한 결제건수</label><input id="bmCap" type="number" min="0"></div><div class="field"><label for="bmInvest">실제 적용할 초기비용 (원)</label><input id="bmInvest" type="number" min="0"></div><div class="field"><label for="bmRunning">실제 월 추가비용 (원, 인건비 포함)</label><input id="bmRunning" type="number" min="0"></div></div><p class="bm-muted">결제건수 × 결제 1건당 객단가 기준입니다. 고객 수와 테이블 수를 혼용하지 마세요. 초기비용은 일시 지출, 월 추가비용은 반복 지출입니다.</p><button type="button" class="btn secondary" id="bmUseCosts">선택 과제의 비용 상한을 계산에 넣기</button><div id="bmOutcome"></div><h3>04. 실행 담당 · 재점검</h3><div class="grid"><div class="field"><label for="bmOwner">실행 담당자</label><input id="bmOwner" type="text"></div><div class="field"><label for="bmReview">재점검일</label><input id="bmReview" type="date"></div><div class="field"><label for="bmActualSales">실행 후 동일기간 환산 월매출 (원)</label><input id="bmActualSales" type="number" min="0"></div><div class="field"><label for="bmMemo">30·90일 실행 / 현장 확인 메모</label><textarea id="bmMemo" placeholder="1주: 메뉴·사진 정비 / 30일: 객단가·공헌이익 확인 / 90일: 검증 후 확대"></textarea></div></div><div id="bmFollowup" class="notice"></div><p class="bm-muted">상담 저장을 누르면 위 입력과 선택과제가 기존 체크리스트와 함께 저장됩니다. 이 HTML 단독 실행 시 현재 브라우저 저장소를 사용합니다. 다른 기기 이동에는 아래 백업을 사용하세요.</p><div class="actions"><button type="button" class="btn secondary" id="bmExport">현재 상담 백업 JSON</button><label class="btn secondary">백업 불러오기<input type="file" id="bmImport" accept="application/json" style="display:none"></label></div></div><div class="card">
+        <h2>6. 매출 목표 · 실행계획</h2>
+        <div class="grid">
+          <div class="field"><label>현재 월매출</label><input id="salesCurrent" type="number" min="0"></div>
+          <div class="field"><label>월 목표매출</label><input id="salesGoal" type="number" min="0"></div>
+          <div class="field"><label>월 영업일수</label><input id="openDays" type="number" min="1" max="31" placeholder="예: 26"></div>
+          <div class="field"><label>평균 객단가</label><input id="avgTicket" type="number" min="0" placeholder="예: 30000"></div>
+          <div class="field"><label>재방문율(%)</label><input id="repeatRate" type="number" min="0" max="100"></div>
+          <div class="field"><label>월 광고비</label><input id="adSpend" type="number" min="0"></div>
+          <div class="field full"><label>현재 사용 중인 마케팅</label><textarea id="marketingCurrent" placeholder="예: 네이버플레이스, 블로그, 인스타그램, 리뷰이벤트, 단골문자"></textarea></div>
+          <div class="field full"><label>상권·고객 특성 메모</label><textarea id="tradeMemo" placeholder="예: 가족단위, 직장인 저녁 수요, 주변 아파트 상권"></textarea></div>
+        </div>
+        <div class="notice">목표매출과 현재매출의 차이를 계산해 필요한 일매출 및 추가 결제건수를 보여주고, 음식점 업종에 맞는 실행과제를 제안합니다.</div>
+      </div><div class="card" id="v9Panel"><h3>02. 근거 기반 실행계획 · 우선 3개</h3><button type="button" id="v9Suggest" class="btn secondary">낮은 역량을 참고해 과제 초안 채우기</button><p class="bm-muted">자동 초안은 상담자가 근거·목표·현실성을 검토해 확정합니다. 기존 벤치마킹 선택과제는 앞 단락에 유지됩니다.</p><details class="bm-editor" open=""><summary>실행과제 1</summary><div class="grid"><div class="field"><label for="v9T0Name">과제명</label><input id="v9T0Name" type="text"></div><div class="field"><label for="v9T0Domain">진단 영역</label><select id="v9T0Domain"><option value="0">상품·서비스</option><option value="1">고객응대</option><option value="2">마케팅</option><option value="3">구매·재고</option><option value="4">매장·운영</option></select></div><div class="field"><label for="v9T0Asis">As-Is · 현재 문제와 근거</label><textarea id="v9T0Asis"></textarea></div><div class="field"><label for="v9T0Tobe">To-Be · 바꿀 상태와 실행방법</label><textarea id="v9T0Tobe"></textarea></div><div class="field"><label for="v9T0Kpi">측정지표·단위</label><input id="v9T0Kpi" type="text"></div><div class="field"><label for="v9T0Base">시작값</label><input id="v9T0Base" type="number" step="any"></div><div class="field"><label for="v9T0Target">목표값</label><input id="v9T0Target" type="number" step="any"></div><div class="field"><label for="v9T0Actual">실제 결과값</label><input id="v9T0Actual" type="number" step="any"></div><div class="field"><label for="v9T0Direction">목표 방향</label><select id="v9T0Direction"><option value="up">높을수록 좋음</option><option value="down">낮을수록 좋음</option></select></div><div class="field"><label for="v9T0Owner">담당자</label><input id="v9T0Owner" type="text"></div><div class="field"><label for="v9T0Due">완료 목표일</label><input id="v9T0Due" type="date"></div><div class="field"><label for="v9T0Cost">초기 예상비용 (원)</label><input id="v9T0Cost" type="number" min="0"></div><div class="field"><label for="v9T0Monthly">월 추가비용 (원)</label><input id="v9T0Monthly" type="number" min="0"></div><div class="field"><label for="v9T0Spent">실제 누적 집행액 (원)</label><input id="v9T0Spent" type="number" min="0"></div><div class="field"><label for="v9T0Status">진행 상태</label><select id="v9T0Status"><option value="계획">계획</option><option value="진행">진행</option><option value="완료">완료</option><option value="보류">보류</option></select></div><div class="field"><label for="v9T0Proof">결과 근거·측정기간·중단/확대 판단 기준</label><textarea id="v9T0Proof"></textarea></div></div></details><details class="bm-editor" open=""><summary>실행과제 2</summary><div class="grid"><div class="field"><label for="v9T1Name">과제명</label><input id="v9T1Name" type="text"></div><div class="field"><label for="v9T1Domain">진단 영역</label><select id="v9T1Domain"><option value="0">상품·서비스</option><option value="1">고객응대</option><option value="2">마케팅</option><option value="3">구매·재고</option><option value="4">매장·운영</option></select></div><div class="field"><label for="v9T1Asis">As-Is · 현재 문제와 근거</label><textarea id="v9T1Asis"></textarea></div><div class="field"><label for="v9T1Tobe">To-Be · 바꿀 상태와 실행방법</label><textarea id="v9T1Tobe"></textarea></div><div class="field"><label for="v9T1Kpi">측정지표·단위</label><input id="v9T1Kpi" type="text"></div><div class="field"><label for="v9T1Base">시작값</label><input id="v9T1Base" type="number" step="any"></div><div class="field"><label for="v9T1Target">목표값</label><input id="v9T1Target" type="number" step="any"></div><div class="field"><label for="v9T1Actual">실제 결과값</label><input id="v9T1Actual" type="number" step="any"></div><div class="field"><label for="v9T1Direction">목표 방향</label><select id="v9T1Direction"><option value="up">높을수록 좋음</option><option value="down">낮을수록 좋음</option></select></div><div class="field"><label for="v9T1Owner">담당자</label><input id="v9T1Owner" type="text"></div><div class="field"><label for="v9T1Due">완료 목표일</label><input id="v9T1Due" type="date"></div><div class="field"><label for="v9T1Cost">초기 예상비용 (원)</label><input id="v9T1Cost" type="number" min="0"></div><div class="field"><label for="v9T1Monthly">월 추가비용 (원)</label><input id="v9T1Monthly" type="number" min="0"></div><div class="field"><label for="v9T1Spent">실제 누적 집행액 (원)</label><input id="v9T1Spent" type="number" min="0"></div><div class="field"><label for="v9T1Status">진행 상태</label><select id="v9T1Status"><option value="계획">계획</option><option value="진행">진행</option><option value="완료">완료</option><option value="보류">보류</option></select></div><div class="field"><label for="v9T1Proof">결과 근거·측정기간·중단/확대 판단 기준</label><textarea id="v9T1Proof"></textarea></div></div></details><details class="bm-editor" open=""><summary>실행과제 3</summary><div class="grid"><div class="field"><label for="v9T2Name">과제명</label><input id="v9T2Name" type="text"></div><div class="field"><label for="v9T2Domain">진단 영역</label><select id="v9T2Domain"><option value="0">상품·서비스</option><option value="1">고객응대</option><option value="2">마케팅</option><option value="3">구매·재고</option><option value="4">매장·운영</option></select></div><div class="field"><label for="v9T2Asis">As-Is · 현재 문제와 근거</label><textarea id="v9T2Asis"></textarea></div><div class="field"><label for="v9T2Tobe">To-Be · 바꿀 상태와 실행방법</label><textarea id="v9T2Tobe"></textarea></div><div class="field"><label for="v9T2Kpi">측정지표·단위</label><input id="v9T2Kpi" type="text"></div><div class="field"><label for="v9T2Base">시작값</label><input id="v9T2Base" type="number" step="any"></div><div class="field"><label for="v9T2Target">목표값</label><input id="v9T2Target" type="number" step="any"></div><div class="field"><label for="v9T2Actual">실제 결과값</label><input id="v9T2Actual" type="number" step="any"></div><div class="field"><label for="v9T2Direction">목표 방향</label><select id="v9T2Direction"><option value="up">높을수록 좋음</option><option value="down">낮을수록 좋음</option></select></div><div class="field"><label for="v9T2Owner">담당자</label><input id="v9T2Owner" type="text"></div><div class="field"><label for="v9T2Due">완료 목표일</label><input id="v9T2Due" type="date"></div><div class="field"><label for="v9T2Cost">초기 예상비용 (원)</label><input id="v9T2Cost" type="number" min="0"></div><div class="field"><label for="v9T2Monthly">월 추가비용 (원)</label><input id="v9T2Monthly" type="number" min="0"></div><div class="field"><label for="v9T2Spent">실제 누적 집행액 (원)</label><input id="v9T2Spent" type="number" min="0"></div><div class="field"><label for="v9T2Status">진행 상태</label><select id="v9T2Status"><option value="계획">계획</option><option value="진행">진행</option><option value="완료">완료</option><option value="보류">보류</option></select></div><div class="field"><label for="v9T2Proof">결과 근거·측정기간·중단/확대 판단 기준</label><textarea id="v9T2Proof"></textarea></div></div></details><div id="v9TasksResult" class="notice"></div><h3>03. 컨설팅 전후 실제 성과</h3><p class="bm-muted">원 단위, 부가세 포함/제외 기준을 동일하게 사용하세요. 아래는 기간 총액입니다. 에너지·광고비는 고정비 또는 변동비의 부분 내역으로, 다시 차감하지 않습니다. 이자도 영업비용에 중복 포함하지 마세요. 원금상환·설비투자는 비용과 별도입니다.</p><div class="grid"><div class="field"><label for="v9Vat">금액 기록 기준</label><select id="v9Vat"><option value="">미확인</option><option value="부가세 제외">부가세 제외</option><option value="부가세 포함">부가세 포함</option></select></div><div class="field"><label for="v9SalesTarget">사후기간 매출 목표 (원)</label><input id="v9SalesTarget" type="number" min="0"></div><div class="field"><label for="v9UsageUnit">에너지 단위 (예: 전기 kWh; 서로 다른 에너지는 합산 금지)</label><input id="v9UsageUnit" type="text"></div><div class="field"><label for="v9CompareNote">기간 비교의 한계 (계절·휴일·가격·인력·영업시간 변화)</label><textarea id="v9CompareNote"></textarea></div><div class="field full"><h3>진단 전 측정기간</h3></div><div class="field"><label for="v9BStart">시작일</label><input id="v9BStart" type="date"></div><div class="field"><label for="v9BEnd">종료일</label><input id="v9BEnd" type="date"></div><div class="field"><label for="v9BDays">실제 영업일수</label><input id="v9BDays" type="number" min="1"></div><div class="field"><label for="v9BEvidence">자료 출처·확인 상태 (POS·장부·고지서 / 점주 진술 구분)</label><textarea id="v9BEvidence"></textarea></div><div class="field"><label for="v9BSales">매출액 (원)</label><input id="v9BSales" type="number" min="0" step="any"></div><div class="field"><label for="v9BVariable">매출에 따른 변동비 (원)</label><input id="v9BVariable" type="number" min="0" step="any"></div><div class="field"><label for="v9BFixed">기간 고정 영업비용 (원)</label><input id="v9BFixed" type="number" min="0" step="any"></div><div class="field"><label for="v9BInterest">이자·금융비용 (원)</label><input id="v9BInterest" type="number" min="0" step="any"></div><div class="field"><label for="v9BEnergy">에너지 요금 (원, 비용에 이미 포함)</label><input id="v9BEnergy" type="number" min="0" step="any"></div><div class="field"><label for="v9BUsage">에너지 사용량 (선택한 단위)</label><input id="v9BUsage" type="number" min="0" step="any"></div><div class="field"><label for="v9BAd">광고비 (원, 비용에 이미 포함)</label><input id="v9BAd" type="number" min="0" step="any"></div><div class="field"><label for="v9BTransactions">결제건수 (건)</label><input id="v9BTransactions" type="number" min="0" step="any"></div><div class="field"><label for="v9BNew">신규 고객 수 (명)</label><input id="v9BNew" type="number" min="0" step="any"></div><div class="field"><label for="v9BReturning">재방문 고객 수 (명)</label><input id="v9BReturning" type="number" min="0" step="any"></div><div class="field"><label for="v9BWaste">폐기 원가 (원, 비용에 이미 포함)</label><input id="v9BWaste" type="number" min="0" step="any"></div><div class="field full"><h3>사후 측정기간</h3></div><div class="field"><label for="v9AStart">시작일</label><input id="v9AStart" type="date"></div><div class="field"><label for="v9AEnd">종료일</label><input id="v9AEnd" type="date"></div><div class="field"><label for="v9ADays">실제 영업일수</label><input id="v9ADays" type="number" min="1"></div><div class="field"><label for="v9AEvidence">자료 출처·확인 상태 (POS·장부·고지서 / 점주 진술 구분)</label><textarea id="v9AEvidence"></textarea></div><div class="field"><label for="v9ASales">매출액 (원)</label><input id="v9ASales" type="number" min="0" step="any"></div><div class="field"><label for="v9AVariable">매출에 따른 변동비 (원)</label><input id="v9AVariable" type="number" min="0" step="any"></div><div class="field"><label for="v9AFixed">기간 고정 영업비용 (원)</label><input id="v9AFixed" type="number" min="0" step="any"></div><div class="field"><label for="v9AInterest">이자·금융비용 (원)</label><input id="v9AInterest" type="number" min="0" step="any"></div><div class="field"><label for="v9AEnergy">에너지 요금 (원, 비용에 이미 포함)</label><input id="v9AEnergy" type="number" min="0" step="any"></div><div class="field"><label for="v9AUsage">에너지 사용량 (선택한 단위)</label><input id="v9AUsage" type="number" min="0" step="any"></div><div class="field"><label for="v9AAd">광고비 (원, 비용에 이미 포함)</label><input id="v9AAd" type="number" min="0" step="any"></div><div class="field"><label for="v9ATransactions">결제건수 (건)</label><input id="v9ATransactions" type="number" min="0" step="any"></div><div class="field"><label for="v9ANew">신규 고객 수 (명)</label><input id="v9ANew" type="number" min="0" step="any"></div><div class="field"><label for="v9AReturning">재방문 고객 수 (명)</label><input id="v9AReturning" type="number" min="0" step="any"></div><div class="field"><label for="v9AWaste">폐기 원가 (원, 비용에 이미 포함)</label><input id="v9AWaste" type="number" min="0" step="any"></div></div><div id="v9Finance"></div><h3>04. 마케팅이 실제 매출로 이어지는지 확인</h3><p class="bm-muted">같은 기간의 지표를 입력합니다. 플랫폼 조회와 실제 구매 연결이 불명확하면 귀속매출은 미확인으로 남깁니다. 채널 간 중복고객·매출은 합산하지 않습니다.</p><div class="grid"><div class="field"><label for="v9Channel">분석 채널 (플레이스·인스타·매장 등)</label><input id="v9Channel" type="text"></div><div class="field"><label for="v9ChannelPeriod">측정기간</label><input id="v9ChannelPeriod" type="text"></div><div class="field"><label for="v9FViews">조회·유입 수</label><input id="v9FViews" type="number" min="0"></div><div class="field"><label for="v9FInquiries">문의 수</label><input id="v9FInquiries" type="number" min="0"></div><div class="field"><label for="v9FBookings">예약 수</label><input id="v9FBookings" type="number" min="0"></div><div class="field"><label for="v9FPurchases">구매 수</label><input id="v9FPurchases" type="number" min="0"></div><div class="field"><label for="v9FNew">채널 유입 신규고객 수</label><input id="v9FNew" type="number" min="0"></div><div class="field"><label for="v9FCost">채널 광고비 (원)</label><input id="v9FCost" type="number" min="0"></div><div class="field"><label for="v9FRevenue">확인된 귀속 매출 (원)</label><input id="v9FRevenue" type="number" min="0"></div><div class="field"><label for="v9FProof">자료·집계 방식·중복 제외 방법</label><textarea id="v9FProof"></textarea></div></div><div id="v9Funnel" class="notice"></div><h3>05. 유지·축소·전환 검토</h3><p class="bm-muted">사례집의 사업전환 사례를 반영했습니다. 점수만으로 폐업을 권하지 않습니다. 지원사업 금액·자격은 2023년 자료를 현재 기준으로 적용하지 않으며 최신 공식공고를 별도로 확인합니다.</p><div class="grid"><div class="field"><label for="v9Alt1">현사업 유지·개선: 강점 / 필요한 비용 / 손익 가능성</label><textarea id="v9Alt1"></textarea></div><div class="field"><label for="v9Alt2">채널·상품 조정: 기존 기술·설비·거래처 활용 가능성</label><textarea id="v9Alt2"></textarea></div><div class="field"><label for="v9Alt3">축소·정리·전환: 계약·철거·인력·부채 확인사항</label><textarea id="v9Alt3"></textarea></div><div class="field"><label for="v9Alt4">신규 사업: 고객 검증·총투자·운전자금·가용시간</label><textarea id="v9Alt4"></textarea></div><div class="field"><label for="v9Decision">상담자 종합 의견·점주 결정·추가 전문가 확인사항</label><textarea id="v9Decision"></textarea></div></div><h3>06. 30·60·90일 사후관리</h3><div class="grid"><div class="field"><label for="v9Review30">30일 점검 예정일</label><input id="v9Review30" type="date"></div><div class="field"><label for="v9ReviewNote30">30일 실제 점검일·완료과제·장애·다음 행동</label><textarea id="v9ReviewNote30"></textarea></div><div class="field"><label for="v9Review60">60일 점검 예정일</label><input id="v9Review60" type="date"></div><div class="field"><label for="v9ReviewNote60">60일 실제 점검일·완료과제·장애·다음 행동</label><textarea id="v9ReviewNote60"></textarea></div><div class="field"><label for="v9Review90">90일 점검 예정일</label><input id="v9Review90" type="date"></div><div class="field"><label for="v9ReviewNote90">90일 실제 점검일·완료과제·장애·다음 행동</label><textarea id="v9ReviewNote90"></textarea></div><div class="field"><label for="v9Satisfaction">점주 종합 만족도 (0~100점, 사업성과와 별도)</label><input id="v9Satisfaction" type="number" min="0" max="100"></div><div class="field"><label for="v9Final">확인된 변화 / 미달 원인 / 다음 30일 결정</label><textarea id="v9Final"></textarea></div></div><details class="bm-editor"><summary>사례집에서 반영한 내용과 해석 주의사항</summary><ul><li>○○간식 pp.2–5: 주력상품·운영형태, 공간 구분, 온라인 판매, 장기 공방 계획.</li><li>○○쟁이 pp.6–9: 경쟁사·키워드·채널·문의 연결, 목표 매출과 사후관리.</li><li>○○바베큐캠프 pp.10–13: 매출 외 영업이익·에너지·안전·작업동선.</li><li>고양이미용○○ pp.14–17: 타깃·스토리·전문성·서비스 사진·예약 전환.</li><li>○○냉장 pp.18–21: 기존 설비·구매 강점 활용, 채널 확대와 신규사업 타당성 비교.</li><li>○○○계찜닭 pp.22–25: 대표자 생활조건·운영시간·재창업 준비.</li><li>○○공방 신촌점 pp.26–29: 지속 적자·고정비 부담, 유지·정리·다른 진로 비교.</li></ul><p>본문 pp.16–17의 일부 과제 제목은 본문과 불일치하며 ‘매출액 달성도 104% 감소’도 해석이 불명확합니다. p.5의 ‘영업이익률 29% 개선’ 등은 %와 %p 기준이 불분명합니다. 원문 성과율을 고객 예상값으로 복사하지 않았습니다. 본 도구는 이익률 차이는 %p, 금액 변화는 원·%로 구분합니다. 최신 네이버 노출 로직·지원사업 자격을 이 자료만으로 판단하지 않습니다.</p></details><div class="actions"><button type="button" class="btn secondary" id="v9Refresh">진단·성과 갱신</button><button type="button" class="btn primary" id="v9Report">전체 리포트 생성</button></div><p class="bm-muted">기존 상담 저장·백업에 모든 항목이 포함됩니다. 이전 버전 상담을 불러오면 신규 항목은 미확인으로 시작합니다.</p></div><div class="field"><label for="v9Q0A">사후 점수</label><select id="v9Q0A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q1A">사후 점수</label><select id="v9Q1A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q2A">사후 점수</label><select id="v9Q2A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q3A">사후 점수</label><select id="v9Q3A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q4A">사후 점수</label><select id="v9Q4A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q5A">사후 점수</label><select id="v9Q5A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q6A">사후 점수</label><select id="v9Q6A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q7A">사후 점수</label><select id="v9Q7A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q8A">사후 점수</label><select id="v9Q8A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q9A">사후 점수</label><select id="v9Q9A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q10A">사후 점수</label><select id="v9Q10A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q11A">사후 점수</label><select id="v9Q11A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q12A">사후 점수</label><select id="v9Q12A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q13A">사후 점수</label><select id="v9Q13A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q14A">사후 점수</label><select id="v9Q14A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q15A">사후 점수</label><select id="v9Q15A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q16A">사후 점수</label><select id="v9Q16A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q17A">사후 점수</label><select id="v9Q17A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q18A">사후 점수</label><select id="v9Q18A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q19A">사후 점수</label><select id="v9Q19A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q20A">사후 점수</label><select id="v9Q20A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q21A">사후 점수</label><select id="v9Q21A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q22A">사후 점수</label><select id="v9Q22A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q23A">사후 점수</label><select id="v9Q23A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q24A">사후 점수</label><select id="v9Q24A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q25A">사후 점수</label><select id="v9Q25A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q26A">사후 점수</label><select id="v9Q26A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q27A">사후 점수</label><select id="v9Q27A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q28A">사후 점수</label><select id="v9Q28A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div><div class="field"><label for="v9Q29A">사후 점수</label><select id="v9Q29A"><option value="">미확인</option><option value="na">해당 없음</option><option value="1">미실행</option><option value="2">비정기 실행</option><option value="3">기준 있음·미측정</option><option value="4">기록·정기 관리</option><option value="5">성과 확인·개선 반복</option></select></div></div></form>
+</main>
+
+<div class="mobilebar no-print">
+  <button type="button" class="btn secondary" id="saveBtn">상담 저장</button>
+  <button type="button" class="btn primary" id="mobileReportBtn">진단 리포트</button>
+</div>
+
+<div class="modal no-print" id="recordsModal" role="dialog" aria-modal="true" aria-labelledby="recordsTitle">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div><b id="recordsTitle">저장된 상담기록</b><div class="small" id="recordSourceLabel">저장목록을 불러오는 중</div></div>
+      <button type="button" class="btn ghost" id="closeRecordsBtn">닫기</button>
+    </div>
+    <div class="modal-body">
+      <div class="record-search">
+        <input id="recordSearch" placeholder="사업장명 · 지역 · 업종 검색">
+        <button type="button" class="btn secondary" id="refreshRecordsBtn">새로고침</button>
+      </div>
+      <div id="recordList" class="record-list"></div>
+    </div>
+  </div>
+</div>
+<div class="save-toast no-print" id="saveToast" aria-live="polite"></div>
+
+<footer>TD KOREA · 본 결과는 입력자료 기반 1차 진단이며 정부기관·세무·노무·금융기관·계약상 공식 판단을 대체하지 않습니다.</footer>
+
+<script>
+(() => {
+ const SPLIT_MODE="diagnosis";
+ const WEBSITE_STATIC_PREVIEW=true;
+  if (window.__TD_KOREA_AI_INIT__) return;
+  window.__TD_KOREA_AI_INIT__ = true;
+
+  const $ = id => document.getElementById(id);
+  const contractDefs = [
+    ["terminal","카드단말기"],["pos","POS"],["kiosk","키오스크"],
+    ["internet","인터넷/통신"],["cctv","CCTV"],["rental","렌탈/기타장비"]
+  ];
+
+  const contracts = $("contracts");
+  contractDefs.forEach(([key,label]) => {
+    contracts.insertAdjacentHTML("beforeend", `
+      <div class="contract">
+        <div class="contract-head"><span>${label}</span><span class="badge" id="${key}Badge">미확인</span></div>
+        <div class="grid3">
+          <div class="field"><label>월 비용</label><input id="${key}Cost" type="number" min="0"></div>
+          <div class="field"><label>계약일</label><input id="${key}Date" type="date"></div>
+          <div class="field"><label>약정기간(개월)</label><input id="${key}Term" type="number" min="1" max="120" placeholder="예: 36"></div>
+          <div class="field"><label>해지위약금</label><input id="${key}Penalty" type="number" min="0"></div>
+          <div class="field"><label>자동연장</label><select id="${key}Renew"><option>미확인</option><option>예</option><option>아니오</option></select></div>
+          <div class="field"><label>계약서 보유</label><select id="${key}Doc"><option>미확인</option><option>예</option><option>아니오</option></select></div>
+        </div>
+      </div>`);
+  });
+
+  function todayISO(){
+    const d=new Date(), y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  $("date").value = todayISO();
+
+  function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+  function n(id){const v=Number($(id)?.value);return Number.isFinite(v)&&v>=0?v:0;}
+  function has(id){return $(id) && $(id).value!=="";}
+  function won(v){return Number(v||0).toLocaleString("ko-KR")+"원";}
+  function parseDate(s){if(!s)return null;const [y,m,d]=s.split("-").map(Number);return new Date(Date.UTC(y,m-1,d));}
+  function addMonths(d,m){const r=new Date(d.getTime());r.setUTCMonth(r.getUTCMonth()+Number(m));return r;}
+  function fmtDate(d){return d?`${d.getUTCFullYear()}.${String(d.getUTCMonth()+1).padStart(2,"0")}.${String(d.getUTCDate()).padStart(2,"0")}`:"미확인";}
+  function todayUTC(){const x=new Date();return new Date(Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()));}
+
+  function contractState(key){
+    const ds=$(key+"Date").value, term=Number($(key+"Term").value);
+    if(!ds||!term) return {text:"미확인",cls:"",days:null,end:null};
+    const end=addMonths(parseDate(ds),term), days=Math.ceil((end-todayUTC())/86400000);
+    if(days<0) return {text:"약정기간 경과",cls:"ok",days,end};
+    if(days<=90) return {text:"만료 임박",cls:"warn",days,end};
+    return {text:"약정 진행중",cls:"warn",days,end};
+  }
+  function updateContract(key){
+    const s=contractState(key), b=$(key+"Badge");
+    b.textContent=s.text;b.className="badge "+s.cls;
+  }
+  contractDefs.forEach(([key])=>{
+    $(key+"Date").addEventListener("change",()=>{updateContract(key);saveDraft(false)});
+    $(key+"Term").addEventListener("input",()=>{updateContract(key);saveDraft(false)});
+  });
+
+  function showStep(num){
+    document.querySelectorAll(".step").forEach(x=>x.classList.remove("active"));
+    $("step"+num).classList.add("active");
+    document.querySelectorAll(".stepchip").forEach((b,i)=>{
+      b.classList.toggle("active",i===num-1);
+      b.classList.toggle("done",i<num-1);
+    });
+    window.scrollTo({top:0,behavior:"smooth"});
+    saveDraft(false);
+    if(num===5 && SPLIT_MODE!=="growth"){
+      $("lookupTarget").textContent = `${region() || "지역 미입력"} · ${$("industry").value.trim() || "업종 미입력"} 지원사업 자동조회`;
+      lookupSupportPrograms(false);
+    }
+  }
+  document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>showStep(Number(b.dataset.next))));
+  document.querySelectorAll("[data-prev]").forEach(b=>b.addEventListener("click",()=>showStep(Number(b.dataset.prev))));
+  document.querySelectorAll(".stepchip").forEach(b=>b.addEventListener("click",()=>showStep(Number(b.dataset.step))));
+
+  $("liquorSale").addEventListener("change",()=>{
+    $("liquorDetail").classList.toggle("hidden",$("liquorSale").value!=="예");
+    saveDraft(false);
+  });
+  function calcLiquor(){
+    const dep=n("sojuQty")*n("bottleDeposit");
+    $("boxDeposit").value=dep||"";
+    const total=n("sojuSupply")+n("sojuVat")+dep;
+    $("sojuTotal").value=total||"";
+  }
+  ["sojuSupply","sojuVat","sojuQty","bottleDeposit"].forEach(id=>$(id).addEventListener("input",calcLiquor));
+
+  $("monthlySales").addEventListener("input",()=>{ if(!$("salesCurrent").value) $("salesCurrent").value=$("monthlySales").value; });
+  function saveDraft(show=true){
+    try{localStorage.setItem(DRAFT_KEY,JSON.stringify(formSnapshot()));if(show) toast("현재 입력내용을 임시저장했습니다.");}catch(e){}
+  }
+  function restoreDraft(){
+    try{const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;applySnapshot(JSON.parse(raw));}catch(e){}
+  }
+  document.querySelectorAll("#form input,#form select,#form textarea").forEach(el=>el.addEventListener("change",()=>saveDraft(false)));
+  $("saveBtn").addEventListener("click",()=>saveRecord(true));
+
+  function region(){return [$("sido").value.trim(),$("sigungu").value.trim(),$("dong").value.trim()].filter(Boolean).join(" ");}
+
+  function employeeDiagnosis(){
+    const hasEmp=$("hasEmployees").value, cnt=n("employeeCount"), insured=n("insuredCount"), under=n("under270Count"), newCnt=n("newSubscriberCount");
+    const parts=[];
+    if(hasEmp==="아니오") parts.push("현재 직원이 없는 것으로 입력되어 직원 대상 사회보험 지원은 우선 검토대상에서 제외됩니다.");
+    else if(hasEmp==="예"){
+      parts.push(`현재 직원 ${cnt||"미확인"}명, 4대보험 가입 직원 ${insured||"미확인"}명으로 입력되었습니다.`);
+      if(cnt>0 && cnt<10 && under>0) parts.push("10인 미만 및 일정 보수 이하 근로자 조건과 관련된 사회보험료 지원제도는 추가 검토 가치가 있습니다. 신규가입 이력·재산·소득 등 세부요건을 최신 기준으로 확인해야 합니다.");
+      if(newCnt>0) parts.push(`신규가입 직원 ${newCnt}명이 입력되어 고용보험 가입이력과 채용일을 기준으로 사업주 지원제도를 추가 확인하는 것이 좋습니다.`);
+    } else parts.push("직원 고용 여부가 미확인입니다.");
+    if($("ownerEI").value==="가입") parts.push("대표자가 자영업자 고용보험에 가입한 것으로 입력되어 소상공인 자영업자 고용보험료 지원 및 지역 추가지원 공고를 확인할 가치가 있습니다.");
+    else if($("ownerEI").value==="미가입") parts.push("대표자 자영업자 고용보험 미가입으로 입력되어 보험료 지원 검토 전에 가입 가능 여부부터 확인해야 합니다.");
+    return parts;
+  }
+
+  function salesActions(industry,reg,growth){
+    const food=industry.includes("음식")||industry.includes("식당")||industry.includes("고기")||industry.includes("카페")||industry.includes("치킨")||industry.includes("주점");
+    let arr=[];
+    if(food){
+      arr=[
+        `${reg||"사업장 인근"} 검색 수요를 잡을 수 있도록 네이버플레이스의 메뉴·사진·영업정보·리뷰를 최신화하고 전화·길찾기·예약 전환을 기록`,
+        "신규고객 유입경로를 POS 또는 간단 설문으로 기록해 네이버·블로그·인스타그램·리뷰·지인추천별 실제 매출기여도를 비교",
+        "객단가를 높일 수 있는 세트메뉴·추가메뉴·주류 조합을 만들고 주문율을 측정",
+        "최근 방문일 기준으로 고객을 나눠 재방문 메시지·생일/기념일·휴면고객 재방문 캠페인을 운영",
+        "요일·시간대별 매출을 비교해 비피크 시간에는 방문 이유를 만들고, 피크 시간에는 회전율·객단가·예약률을 관리"
+      ];
+      if($("liquorSale").value==="예") arr.push("주류 판매매장의 경우 주류 판매량·박스 매입단가·메뉴별 마진을 함께 기록해 매출 증가가 실제 이익 증가로 이어지는지 확인");
+    }else{
+      arr=[
+        `${reg||"지역"}에서 실제 고객이 검색하는 핵심 키워드와 채널을 정하고 유입→문의→구매를 추적`,
+        "신규고객 확보와 기존고객 재구매를 분리해 각 비용과 매출기여도를 측정",
+        "상위 고객군의 구매 이유와 평균 결제금액을 확인해 고마진 상품·서비스 제안을 강화",
+        "월별 프로모션마다 전용 코드 또는 문의경로를 둬 성과를 비교",
+        "지역 경쟁사업자의 가격·후기·상품구성을 정기적으로 확인하고 차별점을 한 문장으로 정리"
+      ];
+    }
+    if(growth>30) arr.unshift("목표 성장률이 큰 편이므로 광고 한 가지에 의존하기보다 고객수·객단가·재방문 세 축을 동시에 개선하는 계획이 필요합니다.");
+    return arr.slice(0,6);
+  }
+
+  let currentRecordId = "";
+  let currentRecordUpdatedAt = "";
+  const LOCAL_RECORDS_KEY = "tdkorea_diagnosis_records_v10";
+  const DRAFT_KEY = "tdkorea_diagnosis_draft_v10";
+
+  function toast(msg){
+    const el=$("saveToast"); if(!el) return;
+    el.textContent=msg; el.classList.add("show");
+    clearTimeout(window.__tdToastTimer);
+    window.__tdToastTimer=setTimeout(()=>el.classList.remove("show"),2200);
+  }
+
+  function uid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "r_"+Date.now()+"_"+Math.random().toString(36).slice(2,9);
+  }
+
+  function recordSummary(payload){
+    const region=[payload.sido,payload.sigungu,payload.dong].filter(Boolean).join(" ");
+    return {
+      store:(payload.store||"사업장").trim()||"사업장",
+      industry:(payload.industry||"미확인").trim()||"미확인",
+      region:region||"지역 미확인",
+      date:payload.date||"",
+    };
+  }
+
+  function updateRecordHeader(source=""){
+    const p=formSnapshot(), s=recordSummary(p);
+    $("currentRecordTitle").textContent=currentRecordId ? s.store : "새 상담";
+    $("currentRecordMeta").textContent=currentRecordId
+      ? `${s.region} · ${s.industry}${currentRecordUpdatedAt?` · 최근 저장 ${currentRecordUpdatedAt}`:""}`
+      : "아직 저장되지 않은 상담입니다.";
+    const state=$("saveState");
+    if(source==="server") state.innerHTML='<span class="sync-dot ok"></span>서버 저장';
+    else if(source==="local") state.innerHTML='<span class="sync-dot local"></span>이 기기에 저장';
+    else state.innerHTML='<span class="sync-dot"></span>미저장';
+  }
+
+  function localRecords(){
+    try{return JSON.parse(localStorage.getItem(LOCAL_RECORDS_KEY)||"[]")}catch(e){return []}
+  }
+  function putLocalRecord(rec){
+    const list=localRecords();
+    const idx=list.findIndex(x=>x.id===rec.id);
+    if(idx>=0) list[idx]=rec; else list.unshift(rec);
+    list.sort((a,b)=>(b.updated_at||"").localeCompare(a.updated_at||""));
+    localStorage.setItem(LOCAL_RECORDS_KEY,JSON.stringify(list.slice(0,300)));
+  }
+  function removeLocalRecord(id){
+    localStorage.setItem(LOCAL_RECORDS_KEY,JSON.stringify(localRecords().filter(x=>x.id!==id)));
+  }
+
+  function formSnapshot(){
+    const data={};
+    document.querySelectorAll("#form input,#form select,#form textarea").forEach(el=>{
+      if(!el.id || el.type==="file") return;
+      data[el.id]=el.type==="checkbox"?el.checked:el.value;
+    });
+    return data;
+  }
+
+  function applySnapshot(data){
+    if(!data) return;
+    document.querySelectorAll("#benchmarkPanel input,#benchmarkPanel select,#benchmarkPanel textarea,#v9Panel input,#v9Panel select,#v9Panel textarea").forEach(el=>{if(el.type!=="file" && el.id && !(el.id in data)){if(el.type==="checkbox")el.checked=false;else el.value="";}});
+    document.querySelectorAll("#form input,#form select,#form textarea").forEach(el=>{
+      if(!el.id || el.type==="file" || !(el.id in data)) return;
+      if(el.type==="checkbox") el.checked=!!data[el.id]; else el.value=data[el.id]??"";
+    });
+    contractDefs.forEach(([key])=>updateContract(key));
+    $("liquorDetail").classList.toggle("hidden",$("liquorSale").value!=="예");
+    calcLiquor();
+    renderBenchmark();
+    renderV9();
+    splitRefresh();
+    if($("salesCurrent").value==="" && $("monthlySales").value) $("salesCurrent").value=$("monthlySales").value;
+  }
+
+  function localRecordObject(){
+    const now=new Date().toISOString();
+    const payload=formSnapshot(), summary=recordSummary(payload);
+    if(!currentRecordId) currentRecordId=uid();
+    return {
+      id:currentRecordId,
+      store:summary.store,
+      industry:summary.industry,
+      region:summary.region,
+      consultation_date:summary.date,
+      updated_at:now,
+      payload,
+      support_data:supportData||null
+    };
+  }
+
+  async function serverSaveRecord(rec){
+    throw new Error("로컬 파일 저장 모드");
+    const res=await fetch("/api/records",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(rec)
+    });
+    if(!res.ok) throw new Error("서버 저장 실패");
+    return await res.json();
+  }
+
+  async function saveRecord(showMessage=true){
+    const rec=localRecordObject();
+    let source="local";
+    try{
+      const saved=await serverSaveRecord(rec);
+      currentRecordId=saved.id||rec.id;
+      currentRecordUpdatedAt=saved.updated_at_display||new Date(rec.updated_at).toLocaleString("ko-KR");
+      source="server";
+      // Local cache too, so recent consultations are recoverable if the network goes down.
+      putLocalRecord({...rec,id:currentRecordId});
+    }catch(e){
+      putLocalRecord(rec);
+      currentRecordUpdatedAt=new Date(rec.updated_at).toLocaleString("ko-KR");
+    }
+    updateRecordHeader(source);
+    saveDraft(false);
+    if(showMessage) toast(source==="server"?"상담기록을 서버에 저장했습니다.":"서버 연결이 없어 이 기기에 저장했습니다.");
+    return rec;
+  }
+
+  async function fetchRecordList(q=""){
+    try{
+      throw new Error("로컬 파일 저장 모드");
+      const res=await fetch("/api/records?q="+encodeURIComponent(q));
+      if(!res.ok) throw new Error("server");
+      const data=await res.json();
+      $("recordSourceLabel").textContent="서버 DB의 상담기록";
+      return {source:"server",items:data.items||[]};
+    }catch(e){
+      const needle=q.trim().toLowerCase();
+      const items=localRecords().filter(r=>{
+        if(!needle) return true;
+        return [r.store,r.region,r.industry].join(" ").toLowerCase().includes(needle);
+      });
+      $("recordSourceLabel").textContent="이 휴대폰/브라우저에 저장된 상담기록";
+      return {source:"local",items};
+    }
+  }
+
+  function recordCard(r,source){
+    const d=r.updated_at_display || (r.updated_at?new Date(r.updated_at).toLocaleString("ko-KR"):"");
+    return `<div class="record-item">
+      <div class="record-item-head">
+        <div><h4>${esc(r.store||"사업장")}</h4><div class="meta">${esc(r.region||"지역 미확인")} · ${esc(r.industry||"미확인")} · ${esc(d)}</div></div>
+        <span class="badge ${source==="server"?"ok":"warn"}">${source==="server"?"DB":"기기"}</span>
+      </div>
+      <div class="record-buttons">
+        <button type="button" class="btn primary" data-load-record="${esc(r.id)}" data-source="${source}">불러오기</button>
+        <button type="button" class="btn ghost" data-delete-record="${esc(r.id)}" data-source="${source}">삭제</button>
+      </div>
+    </div>`;
+  }
+
+  async function renderRecordList(){
+    $("recordList").innerHTML='<div class="empty-result"><span class="spinner"></span>저장기록을 불러오는 중입니다.</div>';
+    const result=await fetchRecordList($("recordSearch").value);
+    $("recordList").innerHTML=result.items.length
+      ? result.items.map(r=>recordCard(r,result.source)).join("")
+      : '<div class="empty-result">저장된 상담기록이 없습니다.</div>';
+  }
+
+  async function loadRecord(id,source){
+    let rec=null;
+    if(source==="server"){
+      try{
+        const res=await fetch("/api/records/"+encodeURIComponent(id));
+        if(res.ok) rec=await res.json();
+      }catch(e){}
+    }
+    if(!rec) rec=localRecords().find(x=>x.id===id)||null;
+    if(!rec){toast("상담기록을 불러오지 못했습니다.");return;}
+    currentRecordId=rec.id;
+    applySnapshot(rec.payload||{});
+    supportData=rec.support_data||null;
+    supportSearchSignature=supportData?currentSupportSignature():"";
+    if(supportData) renderSupportResults(supportData);
+    currentRecordUpdatedAt=rec.updated_at_display||(rec.updated_at?new Date(rec.updated_at).toLocaleString("ko-KR"):"");
+    updateRecordHeader(source==="server"?"server":"local");
+    $("recordsModal").classList.remove("show");
+    saveDraft(false);
+    showStep(1);
+    toast("저장된 상담기록을 불러왔습니다.");
+  }
+
+  async function deleteRecord(id,source){
+    if(!confirm("이 상담기록을 삭제할까요?")) return;
+    if(source==="server"){
+      try{await fetch("/api/records/"+encodeURIComponent(id),{method:"DELETE"});}catch(e){}
+    }
+    removeLocalRecord(id);
+    if(currentRecordId===id){
+      currentRecordId="";
+      currentRecordUpdatedAt="";
+      updateRecordHeader("");
+    }
+    await renderRecordList();
+    toast("상담기록을 삭제했습니다.");
+  }
+
+  function newRecord(){
+    if(!confirm("새 상담을 시작할까요? 현재 입력내용은 저장하지 않으면 사라질 수 있습니다.")) return;
+    currentRecordId="";
+    currentRecordUpdatedAt="";
+    supportData=null;
+    supportSearchSignature="";
+    document.querySelectorAll("#form input,#form textarea").forEach(el=>{
+      if(el.type==="checkbox") el.checked=false;
+      else el.value="";
+    });
+    document.querySelectorAll("#form select").forEach(el=>el.selectedIndex=0);
+    $("industry").value="일반음식점";
+    $("businessType").value="개인사업자";
+    $("date").value=todayISO();
+    contractDefs.forEach(([key])=>updateContract(key));
+    $("liquorDetail").classList.add("hidden");
+    $("supportResults").innerHTML='<div class="empty-result">아직 지원사업을 조회하지 않았습니다.</div>';
+    $("report").innerHTML="<h2>진단 리포트가 아직 생성되지 않았습니다.</h2>";
+    try{localStorage.removeItem(DRAFT_KEY)}catch(e){}
+    updateRecordHeader("");
+    renderBenchmark();
+    renderV9();
+    splitRefresh();
+    showStep(1);
+  }
+
+  let supportData = null;
+  let supportSearchSignature = "";
+
+  function currentSupportSignature(){
+    return [
+      region(),
+      $("industry").value.trim(),
+      $("businessType").value,
+      $("opened").value,
+      n("monthlySales") || n("salesCurrent"),
+      $("hasEmployees").value,
+      n("employeeCount"),
+      $("fourInsured").value,
+      $("ownerEI").value
+    ].join("|");
+  }
+
+  function supportQueryPayload(){
+    return {
+      date: $("date").value || todayISO(),
+      store: $("store").value.trim(),
+      industry: $("industry").value.trim(),
+      business_type: $("businessType").value,
+      opened: $("opened").value,
+      monthly_sales: n("monthlySales") || n("salesCurrent"),
+      sido: $("sido").value.trim(),
+      sigungu: $("sigungu").value.trim(),
+      dong: $("dong").value.trim(),
+      has_employees: $("hasEmployees").value,
+      employee_count: n("employeeCount"),
+      four_insured: $("fourInsured").value,
+      insured_count: n("insuredCount"),
+      owner_employment_insurance: $("ownerEI").value,
+      concern: $("concern").value.trim()
+    };
+  }
+
+  function supportItemHtml(item, type){
+    const typeLabel = type==="current" ? "현재 접수" : type==="closed" ? "최근 종료" : "반복 확인";
+    const typeClass = type==="current" ? "ok" : type==="closed" ? "warn" : "purple";
+    const years = Array.isArray(item.recurrence_years) && item.recurrence_years.length
+      ? `<div><b>확인된 반복연도:</b> ${item.recurrence_years.map(esc).join(", ")}</div>` : "";
+    const next = item.next_check_period ? `<div><b>다음 확인시기:</b> ${esc(item.next_check_period)}</div>` : "";
+    const url = item.source_url
+      ? `<div class="support-link"><b>공식출처:</b> <a href="${esc(item.source_url)}" target="_blank" rel="noopener noreferrer">${esc(item.source_url)}</a></div>`
+      : `<div class="small">공식 출처 URL 미확인</div>`;
+    return `<div class="support-result">
+      <div class="contract-head"><span>${esc(item.title || "사업명 미확인")}</span><span class="badge ${typeClass}">${typeLabel}</span></div>
+      <div class="support-meta">
+        <span class="badge">${esc(item.agency || "기관 미확인")}</span>
+        <span class="badge">${esc(item.fit || "추가요건 확인 필요")}</span>
+        ${item.apply_period ? `<span class="badge">${esc(item.apply_period)}</span>` : ""}
+      </div>
+      ${item.support_summary ? `<div><b>지원내용:</b> ${esc(item.support_summary)}</div>` : ""}
+      ${item.target_summary ? `<div><b>주요 대상:</b> ${esc(item.target_summary)}</div>` : ""}
+      ${item.fit_reason ? `<div><b>1차 판단:</b> ${esc(item.fit_reason)}</div>` : ""}
+      ${years}${next}${url}
+    </div>`;
+  }
+
+  function renderSupportResults(data){
+    supportData = data || null;
+    const current = data?.current || [];
+    const closed = data?.recently_closed || [];
+    const recurring = data?.recurring || [];
+    $("lookupStatus").textContent = data
+      ? `조회 완료 · 현재 ${current.length}건 / 최근 종료 ${closed.length}건 / 반복 확인 ${recurring.length}건`
+      : "조회 결과가 없습니다.";
+
+    const section = (title, items, type, emptyText) => `
+      <h3>${title} <span class="badge">${items.length}건</span></h3>
+      ${items.length ? items.map(x=>supportItemHtml(x,type)).join("") : `<div class="empty-result">${emptyText}</div>`}
+    `;
+
+    $("supportResults").innerHTML =
+      section("현재 신청 가능한 공고 후보", current, "current", "현재 조건에서 확인된 접수 중 공고가 없습니다. 다른 공식 공고가 존재할 수 있으므로 미확정으로 처리합니다.") +
+      section("최근 종료된 관련 공고", closed, "closed", "최근 종료된 관련 공고가 확인되지 않았습니다.") +
+      section("매년 또는 반복적으로 확인할 사업", recurring, "repeat", "최근 여러 해 반복된 동일·유사 사업을 확인하지 못했습니다.") +
+      (data?.notes ? `<div class="notice">${esc(data.notes)}</div>` : "");
+  }
+
+  async function lookupSupportPrograms(force=false){
+    const industry = $("industry").value.trim();
+    const reg = region();
+    if(WEBSITE_STATIC_PREVIEW){supportData=null;supportSearchSignature="";}
+    $("lookupTarget").textContent = `${reg || "지역 미입력"} · ${industry || "업종 미입력"} 지원사업 자동조회`;
+    if(!industry || !$("sido").value.trim() || !$("sigungu").value.trim()){
+      $("lookupStatus").textContent = "시·도, 시·군·구, 업종을 먼저 입력해주세요.";
+      return null;
+    }
+
+    if(WEBSITE_STATIC_PREVIEW){
+      supportData=null;
+      supportSearchSignature="";
+      $("lookupTarget").textContent=reg+" · "+industry+" 지원사업 확인";
+      $("lookupStatus").textContent="지원사업 자동조회 서버 연결 전입니다.";
+      $("autoLookupBtn").disabled=true;
+      $("autoLookupBtn").textContent="자동조회 연결 전";
+      $("supportResults").innerHTML='<div class="notice warn"><b>지원사업 자동조회 연결 전</b><br>현재 미리보기에서는 최신 공고를 자동으로 조회하지 않습니다. 입력한 지역·업종과 공고의 신청기간·대상조건을 별도로 확인해야 합니다. 다른 진단 입력과 리포트 생성은 계속 이용할 수 있습니다.</div>';
+      return null;
+    }
+    const signature = currentSupportSignature();
+    if(!force && supportData && supportSearchSignature === signature) return supportData;
+
+    $("autoLookupBtn").disabled = true;
+    $("autoLookupBtn").textContent = "조회 중...";
+    $("lookupStatus").innerHTML = `<span class="spinner"></span>최신 공식공고와 최근 종료·반복 사업을 확인하고 있습니다.`;
+    $("supportResults").innerHTML = `<div class="empty-result"><span class="spinner"></span>지원사업을 자동으로 확인하는 중입니다.</div>`;
+
+    try{
+      const res = await fetch("/api/support-search",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(supportQueryPayload())
+      });
+      const payload = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(payload.detail || payload.error || `HTTP ${res.status}`);
+      supportSearchSignature = signature;
+      renderSupportResults(payload);
+      try{
+        localStorage.setItem("tdkorea_support_result_v6",JSON.stringify({signature,data:payload}));
+      }catch(e){}
+      return payload;
+    }catch(err){
+      supportData = null;
+      $("lookupStatus").textContent = "자동조회 서버에 연결하지 못했습니다.";
+      $("supportResults").innerHTML = `<div class="notice warn">
+        <b>자동조회 연결 실패</b><br>
+        ${esc(err.message || "서버 연결 오류")}<br><br>
+        이 HTML을 파일로 직접 연 경우에는 자동조회 API가 동작하지 않습니다. 제공된 서버형 패키지로 실행하면 지역·업종을 기준으로 자동조회됩니다.
+      </div>`;
+      return null;
+    }finally{
+      $("autoLookupBtn").disabled = false;
+      $("autoLookupBtn").textContent = "지원사업 다시 조회";
+    }
+  }
+
+  function supportHtml(){
+    if(!supportData){
+      return `<div class="notice warn">지역 지원사업 자동조회 결과를 불러오지 못했습니다. 지원 가능 여부를 확정하지 않습니다.</div>`;
+    }
+    const current=supportData.current||[], closed=supportData.recently_closed||[], recurring=supportData.recurring||[];
+    const compact=(title,items,type,empty)=>`
+      <h4>${title}</h4>
+      ${items.length ? items.map(x=>supportItemHtml(x,type)).join("") : `<p class="small">${empty}</p>`}
+    `;
+    return compact("현재 신청 가능한 공고 후보",current,"current","현재 확인된 공고 없음")+
+           compact("최근 종료된 관련 공고",closed,"closed","최근 종료 공고 미확인")+
+           compact("반복 확인 대상 사업",recurring,"repeat","반복 공고 이력 미확인")+
+           (supportData.notes?`<div class="notice">${esc(supportData.notes)}</div>`:"");
+  }
+
+  async function generateReport(){
+    if(SPLIT_MODE==="growth"){splitGrowthReport();return;}
+    if(WEBSITE_STATIC_PREVIEW || !supportData || supportSearchSignature !== currentSupportSignature()){
+      await lookupSupportPrograms(false);
+    }
+    const store=$("store").value.trim()||"사업장";
+    const industry=$("industry").value.trim()||"미확인";
+    const reg=region()||"지역 미확인";
+    const sales=n("salesCurrent")||n("monthlySales"), goal=n("salesGoal"), days=n("openDays"), ticket=n("avgTicket");
+    const gap=Math.max(0,goal-sales), growth=sales>0&&goal>sales?(gap/sales*100):0, achieve=goal>0?Math.min(100,sales/goal*100):0;
+    const dailyGap=days>0?gap/days:0, extraTickets=ticket>0&&dailyGap>0?Math.ceil(dailyGap/ticket):0;
+
+    const baseCosts=[...document.querySelectorAll("[data-cost]")].map(el=>({name:el.dataset.cost,value:Number(el.value)||0,known:el.value!==""}));
+    const contractData=contractDefs.map(([key,label])=>({key,label,cost:n(key+"Cost"),known:has(key+"Cost"),state:contractState(key),penalty:n(key+"Penalty"),renew:$(key+"Renew").value,doc:$(key+"Doc").value}));
+    const totalFixed=baseCosts.reduce((a,x)=>a+x.value,0)+contractData.reduce((a,x)=>a+x.cost,0);
+    const fixedRatio=sales>0?totalFixed/sales*100:null;
+    const ranked=[...baseCosts.filter(x=>x.value>0),...contractData.filter(x=>x.cost>0).map(x=>({name:x.label,value:x.cost}))].sort((a,b)=>b.value-a.value).slice(0,5);
+    const expiring=contractData.filter(x=>x.state.days!==null&&x.state.days<=90);
+    const unknownContracts=contractData.filter(x=>x.state.days===null);
+    const contractRows=contractData.map(x=>`<tr><td>${esc(x.label)}</td><td>${won(x.cost)}</td><td>${esc(x.state.text)}</td><td>${fmtDate(x.state.end)}</td><td>${x.penalty?won(x.penalty):"미확인"}</td></tr>`).join("");
+
+    const liquorOn=$("liquorSale").value==="예";
+    const liquorText=!liquorOn?"주류 판매를 하지 않는 것으로 입력되었습니다.":`
+      거래업체: <b>${esc($("liquorVendor").value||"미확인")}</b><br>
+      주류대출: <b>${esc($("liquorLoan").value)}</b>${n("liquorLoanBalance")?` / 잔액 ${won(n("liquorLoanBalance"))}`:""}<br>
+      참이슬 1박스: 공급가액 <b>${won(n("sojuSupply"))}</b> + 부가세 <b>${won(n("sojuVat"))}</b> + 병보증금 <b>${won(n("boxDeposit"))}</b> = 총 지급액 <b>${won(n("sojuTotal"))}</b>
+    `;
+
+    const empParts=employeeDiagnosis();
+    const marketing=salesActions(industry,reg,growth);
+
+    const top5=[];
+    if(unknownContracts.length) top5.push(["약정 계약서 확보",`${unknownContracts.map(x=>x.label).join(", ")}의 계약일·약정기간을 확인해 교체 가능시점을 확정`]);
+    if(expiring.length) top5.push(["만료·만료임박 계약 비교",`${expiring.map(x=>x.label).join(", ")}의 위약금과 대체 견적을 비교`]);
+    if(goal>sales&&goal>0) top5.push(["매출목표 실행계획",`월 ${won(gap)} 추가매출을 고객수·객단가·재방문으로 분해해 관리`]);
+    if($("hasEmployees").value==="예") top5.push(["고용지원 재점검","4대보험·고용보험 가입이력과 최신 지원사업 조건을 대조"]);
+    top5.push(["지역 지원사업 월 1회 확인",`${reg}의 현재공고·지난공고·반복사업을 정기적으로 업데이트`]);
+    if(liquorOn) top5.push(["주류 거래조건 점검","주류대출 잔액과 박스 매입단가를 계약조건과 함께 비교"]);
+    while(top5.length<5) top5.push(["고정비 우선순위 점검","금액이 큰 고정비부터 계약조건과 이용 필요성을 확인"]);
+    const top5html=top5.slice(0,5).map((x,i)=>`<div class="topitem"><div class="topnum">${i+1}</div><div><b>${esc(x[0])}</b><br>${esc(x[1])}</div></div>`).join("");
+
+    const addDocs=[];
+    if(unknownContracts.length) addDocs.push("POS·카드단말기·인터넷·CCTV·렌탈 계약서");
+    if($("hasEmployees").value==="예") addDocs.push("직원별 고용보험 취득일·보수·4대보험 가입내역");
+    if($("ownerEI").value==="가입") addDocs.push("대표자 자영업자 고용보험 가입·납부내역");
+    if(liquorOn) addDocs.push("주류 거래명세서 및 주류대출 계약서");
+    addDocs.push("사업자등록증, 최근 매출증빙, 납세 관련 서류(지원사업별 상이)");
+
+    $("report").innerHTML=`
+      <div><span class="badge ok">TD KOREA 고객용 경영진단</span>
+      <h2>${esc(store)} 사업장 경영진단 리포트</h2>
+      <div class="sub">${esc($("date").value||"")} · ${esc(industry)} · ${esc(reg)}</div></div>
+
+      <div class="calcbox">
+        <div class="metric"><span>현재 월매출</span><b>${sales?won(sales):"미확인"}</b></div>
+        <div class="metric"><span>월 목표매출</span><b>${goal?won(goal):"미확인"}</b></div>
+        <div class="metric"><span>확인된 월 고정비</span><b>${won(totalFixed)}</b></div>
+        <div class="metric"><span>매출 대비 고정비</span><b>${fixedRatio!==null?fixedRatio.toFixed(1)+"%":"미확인"}</b></div>
+      </div>
+
+      <div class="summarybox">
+        <b>종합진단</b><br>
+        입력자료 기준으로 우선 확인할 영역은 <b>계약형 고정비, 지역 지원사업, 직원·4대보험 지원가능성, 목표매출 달성계획</b>입니다.
+        ${goal>sales&&goal>0?` 현재매출에서 목표까지 월 <b>${won(gap)}</b>, 약 <b>${growth.toFixed(1)}%</b>의 추가 성장이 필요합니다.`:""}
+        지원금·절감액·계약해지 가능 여부는 공식공고와 계약자료 확인 전 확정하지 않습니다.
+      </div>
+
+      ${goal>0?`<section><h3>1. 매출 목표 현황</h3>
+        <div class="progressline"><div class="progressfill" style="width:${achieve}%"></div></div>
+        <p>현재 목표 달성률: <b>${achieve.toFixed(1)}%</b></p>
+        ${gap>0?`<p>추가 필요매출: <b>${won(gap)}/월</b>${days?` · 하루 약 <b>${won(Math.round(dailyGap))}</b>`:""}${extraTickets?` · 현재 객단가 기준 하루 약 <b>${extraTickets}건</b>의 추가 결제`:""}</p>`:`<p>입력된 현재매출이 목표매출 이상입니다. 다음 목표 또는 수익성 개선 목표를 설정할 수 있습니다.</p>`}
+      </section>`:""}
+
+      <section><h3>2. 고정비 · 약정 진단</h3>
+        <p>확인된 월 고정비는 <b>${won(totalFixed)}</b>${fixedRatio!==null?`, 월매출의 약 <b>${fixedRatio.toFixed(1)}%</b>`:""}입니다. 미입력 항목은 합계에 포함하지 않았습니다.</p>
+        <table><thead><tr><th>약정항목</th><th>월비용</th><th>상태</th><th>계산상 종료일</th><th>위약금</th></tr></thead><tbody>${contractRows}</tbody></table>
+        <h4>비용 TOP 5</h4>
+        ${ranked.length?ranked.map((x,i)=>`<div class="topitem"><div class="topnum">${i+1}</div><div><b>${esc(x.name)}</b><br>${won(x.value)} / 월</div></div>`).join(""):"<p class='small'>입력된 비용이 없습니다.</p>"}
+      </section>
+
+      <section><h3>3. 주류 거래 점검</h3><div class="summarybox">${liquorText}</div>
+        <p class="small">주류 매입가는 고정비 합계에서 제외했습니다. 거래단가·대출조건·판매량을 함께 확인해야 실제 수익성 판단이 가능합니다.</p>
+      </section>
+
+      <section><h3>4. 직원 · 4대보험 · 고용지원 검토</h3>
+        <ul>${empParts.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        <div class="notice warn">직원 또는 대표자의 보험가입만으로 특정 지원금이 확정되는 것은 아닙니다. 최신 고용·소상공인 지원 공고와 세부요건을 확인해야 합니다.</div>
+      </section>
+
+      <section><h3>5. 지역 지원금 · 지원공고</h3>
+        <p><b>${esc(reg)}</b> 및 <b>${esc(industry)}</b> 조건을 바탕으로 확인이 필요한 지원사업 항목입니다. 현재 자동조회 서버가 연결되지 않아 공식 공고 검색 결과는 포함하지 않습니다. 지원 여부는 공고별로 확인해야 합니다.</p>
+        ${supportHtml()}
+      </section>
+
+      <section><h3>6. 목표매출 달성을 위한 실행과제</h3>
+        <p><b>${esc(industry)} / ${esc(reg)}</b> 조건을 기준으로 한 1차 실행안입니다.</p>
+        <ul>${marketing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        ${$("marketingCurrent").value?`<p><b>현재 마케팅:</b> ${esc($("marketingCurrent").value)}</p>`:""}
+        ${$("tradeMemo").value?`<p><b>상권·고객 메모:</b> ${esc($("tradeMemo").value)}</p>`:""}
+      </section>
+
+      <section><h3>7. TOP 5 실행과제</h3>${top5html}</section>
+
+      <section><h3>8. 추가 확인자료</h3>
+        <ul>${addDocs.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      </section>
+
+      <section><h3>9. 후속관리</h3>
+        <div class="summarybox"><b>권장 흐름</b><br>자료보완 → 고정비·계약 비교 → 지역지원 공고 검토 → 고용지원 검토 → 매출 실행과제 적용 → 30~90일 후 재진단</div>
+        <p class="small">본 리포트는 상담 입력자료를 바탕으로 한 1차 경영진단입니다. 정부지원금, 환급금, 정책자금, 고용지원금, 절감 가능액, 계약해지 가능 여부를 확정하지 않습니다.</p>
+      </section>
+    `;
+    renderBenchmark();
+    $("report").insertAdjacentHTML("beforeend",splitDiagnosisReport());
+    splitCleanReport();
+    saveDraft(false);
+    if(currentRecordId) saveRecord(false);
+    showStep(7);
+  }
+
+  $("autoLookupBtn").addEventListener("click",()=>lookupSupportPrograms(true));
+
+  $("reportBtn").addEventListener("click",generateReport);
+  $("mobileReportBtn").addEventListener("click",generateReport);
+  $("pdfBtn").addEventListener("click",()=>window.print());
+  $("mailBtn").addEventListener("click",()=>{
+    const subject=`[TD KOREA 경영진단] ${$("store").value.trim()||"사업장"}`;
+    const body=$("report").innerText.slice(0,14000);
+    location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
+
+
+  $("saveRecordBtn").addEventListener("click",()=>saveRecord(true));
+  $("newRecordBtn").addEventListener("click",newRecord);
+  $("recordsBtn").addEventListener("click",async()=>{
+    $("recordsModal").classList.add("show");
+    $("recordSearch").value="";
+    await renderRecordList();
+  });
+  $("closeRecordsBtn").addEventListener("click",()=>$("recordsModal").classList.remove("show"));
+  $("recordsModal").addEventListener("click",e=>{if(e.target===$("recordsModal")) $("recordsModal").classList.remove("show");});
+  $("refreshRecordsBtn").addEventListener("click",renderRecordList);
+  let __recordSearchTimer;
+  $("recordSearch").addEventListener("input",()=>{
+    clearTimeout(__recordSearchTimer);
+    __recordSearchTimer=setTimeout(renderRecordList,250);
+  });
+  $("recordList").addEventListener("click",e=>{
+    const load=e.target.closest("[data-load-record]");
+    if(load){loadRecord(load.dataset.loadRecord,load.dataset.source);return;}
+    const del=e.target.closest("[data-delete-record]");
+    if(del){deleteRecord(del.dataset.deleteRecord,del.dataset.source);}
+  });
+
+  const bmCatalog=[
+    {name:'엄마의 봄날',address:'경기 김포시 모담공원로 178',fact:'공개 후기에서 영월·동강 정식의 구성 차이와 토속 한식 메뉴 확인.',idea:'기존 재료로 기본·특선 2단계 메뉴를 시험해 선택 비율과 객단가 측정.',hard:'반찬·코스 확대는 조리시간과 폐기량 검증 후 결정.',url:'https://www.diningcode.com/profile.php?rid=GSbRmCuQPaTg'},
+    {name:'본우리반상 김포풍무역점',address:'경기 김포시 유현로 234',fact:'업체 소개에 솥밥·화로·찌개 메뉴, 포장 및 어린이 메뉴 안내.',idea:'주력 반상과 가족용 선택지를 메뉴판에서 명확히 구분하고 포장 메뉴 1종 시험.',hard:'솥밥·화로 설비는 피크 시간 처리능력과 안전·설치조건 확인.',url:'https://www.daangn.com/kr/local-profile/본우리반상-김포풍무역점-syypgd55nqwt/'},
+    {name:'봄설 김포점',address:'경기 김포시 검단로 910',fact:'공개 후기에서 한상 메뉴와 반찬 셀프바 확인. 매장명·운영 현황은 방문 전 재확인.',idea:'한상 구성 사진과 가족 식사 안내를 정비하고 리필 요청 빈도부터 기록.',hard:'셀프바 복제는 공간·동선·위생관리·식재료 증가분 확인 후 검토.',url:'https://superchart.com/ko/@anseong-open-satchel/gimpo-bomseol-korean-set-meal/'}
+  ];
+  const bmStrategies={
+    '한식':['기본·특선 정식 2단계 시험','기존 반찬·재료를 활용해 추가 구성 1종만 시험.','선택률·객단가·재료비','점심 준비·배식 순서 표준화','대표 메뉴 사전 준비와 주문 순서를 정리.','제공시간·결제건수','주방 병목 동선 개선','30일 시간 측정 후 작업대·배식동선 견적 비교.'],
+    '고깃집':['2·3·4인 세트 구성','인원별 고기·사이드 구성을 원가표와 함께 제안.','세트 선택률·테이블 공헌이익','모임 예약 안내 정비','인원·예산·예약 가능시간을 한 화면에 안내.','문의→예약 전환율','예약·배기·동선 개선','회식 수요와 좌석가동률 확인 후 설비 비교.'],
+    '카페':['음료·디저트 동반구매','외부 납품 디저트 1종으로 소량 시험하고 폐기 기록.','동반구매율·폐기원가','포장 고객 동선 안내','픽업 위치·대표 음료 사진·혼잡시간을 정리.','포장 결제건수·제공시간','픽업·작업대 개선','자체 제빵보다 작업 병목과 냉장 진열 필요성 검증.'],
+    '치킨·배달':['대표 메뉴·사진 정비','원가와 수수료를 반영한 대표 세트 2개 시험.','주문 전환율·주문당 공헌이익','포장 예약 안내','혼잡시간 예약과 포장 방법을 명확하게 안내.','포장 비중·조리시간','조리 병목 설비 개선','주문 누락·대기 측정 후 장비 용량 검토.'],
+    '주점':['안주·주류 조합 제안','마진 확인 후 2인 세트 한 종류로 시험.','테이블 공헌이익·추가 주문율','비피크 모임 예약','요일별 예약 안내와 소규모 모임 제안.','비피크 결제건수','좌석·서빙 동선 개선','체류시간과 회전 저하 원인 확인 후 재배치.'],
+    '미용실':['시술 구성·가격 안내','대표 시술과 추가 케어를 소요시간·가격과 함께 안내.','시간당 공헌이익·상담전환','시술주기별 다음 예약','시술 종료 시 다음 예약 제안, 동의 고객만 알림.','재예약률·노쇼율','예약 시간·좌석 개선','디자이너 가동률 확인 후 예약 시스템·좌석 검토.'],
+    '정육점':['2인 소포장·캠핑 세트','동일 원육으로 소포장 구성 2종 시험.','구매단가·폐기율','단골 예약 픽업','예약 수량 확인 후 준비해 재고 부담 축소.','예약 매출·재고회전','냉장 진열·포장 개선','온도관리·폐기율·픽업 수요 확인 후 장비 견적.'],
+    '소매점':['연관상품 동반 진열','주력 상품 옆에 함께 쓰는 상품 1~2종 배치.','동반구매율·재고회전','단골 재구매 안내','동의 고객에 소모 주기·재입고 안내.','재구매율·연락당 구매율','재고·진열 운영 개선','품절·장기재고 확인 후 재고 도구와 집기 검토.']
+  };
+  function bmCategory(){
+    if($('bmCategory').value)return $('bmCategory').value;
+    const t=$('industry').value;
+    return /카페|커피|베이커리/.test(t)?'카페':/고기|삼겹|갈비/.test(t)?'고깃집':/치킨|배달/.test(t)?'치킨·배달':/미용|헤어/.test(t)?'미용실':/정육/.test(t)?'정육점':/주점|술집|호프/.test(t)?'주점':/소매|잡화/.test(t)?'소매점':/한식|백반|한정식/.test(t)?'한식':'';
+  }
+  function bmVal(id){return $(id).value.trim()}
+  function bmMoney(x){return Math.round(x).toLocaleString('ko-KR')+'원'}
+  function bmSafeUrl(u){try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:''}catch{return ''}}
+  function bmCandidates(){
+    const cat=bmCategory(),city=bmVal('sigungu');
+    const out=/김포/.test(city)&&cat==='한식'?bmCatalog.map(x=>({...x,date:'2026-10-09',origin:'공개정보 참고',fit:'면적·매출 미확인 / 동일 시 참고'})):[];
+    for(let i=0;i<3;i++){
+      const k='bmC'+i;
+      if(bmVal(k+'Name')&&bmVal(k+'Region')===city&&bmVal(k+'Category')===cat){
+        const dist=has(k+'Distance')?n(k+'Distance'):null;
+        if(has('bmRadius')&&dist!==null&&dist>n('bmRadius'))continue;
+        const area=n(k+'Area'),own=n('bmArea');
+        out.push({name:bmVal(k+'Name'),address:bmVal(k+'Address')||'주소 미확인',fact:bmVal(k+'Fact')||'특징 미확인',idea:bmVal(k+'Idea')||'적용방안 상담 필요',hard:'실제 비용·운영조건 확인 필요',url:bmSafeUrl(bmVal(k+'Url')),date:bmVal(k+'Date')||'확인일 미입력',origin:'상담자 등록',fit:(dist===null?'거리 미확인':dist+'km')+' / '+(area&&own?(area/own>=.5&&area/own<=2?'면적 0.5~2배 범위':'면적 차이 큼'):'면적 미확인')});
+      }
+    }
+    return out;
+  }
+  function bmCandidateHtml(){const list=bmCandidates();return list.length?list.map(x=>`<article class="bm-box"><span class="bm-pill">${esc(x.origin)}</span><h3>${esc(x.name)}</h3><p class="bm-muted">${esc(x.address)}<br>${esc(x.fit)}</p><p><b>확인 특징</b><br>${esc(x.fact)}</p><p><b>즉시 응용 제안</b><br>${esc(x.idea)}</p><p><b>중장기 검토</b><br>${esc(x.hard)}</p><p class="bm-muted">${esc(x.date)} · 매출 미확인</p>${bmSafeUrl(x.url)?`<a target="_blank" rel="noopener noreferrer" href="${esc(bmSafeUrl(x.url))}">근거 보기 ↗</a>`:''}</article>`).join(''):'<div class="notice">이 지역·세부업종의 확인된 사례가 아직 없습니다. 지도 검색으로 3곳을 선정한 뒤 아래 후보 등록에 근거를 입력하세요. 다른 지역 사례를 인근 매장으로 표시하지 않습니다.</div>'}
+  function bmPlans(){const a=bmStrategies[bmCategory()];if(!a)return [];
+    return [
+      {title:a[0],how:a[1],kpi:a[2],term:'즉시 · 1~2주',low:0,high:200000,monthly:0,result:'가격인상보다 선택 구성을 먼저 검증. 첫 2주 전후 객단가와 건당 공헌이익 비교.'},
+      {title:a[3],how:a[4],kpi:a[5],term:'즉시 · 2~4주',low:0,high:100000,monthly:50000,result:'동일 요일 2주씩 비교. 구매·예약·재방문 수를 직접 기록.'},
+      {title:'고객·시간대별 운영 표준화',how:'4주간 POS 자료로 시간대·상품별 매출과 마진을 정리하고 효과 있는 과제만 반복.',kpi:'시간당 매출·공헌이익·재방문',term:'중기 · 1~3개월',low:100000,high:500000,monthly:100000,result:'성과가 확인된 상품과 고객군에 집중. 30·60·90일 재점검.'},
+      {title:a[6],how:a[7],kpi:'처리시간·추가 수용건수·회수기간',term:'장기 · 3~6개월',low:1000000,high:5000000,monthly:100000,result:'예산은 소규모 집기·설비 개선 가정. 증축·대규모 인테리어 제외. 사전 견적 필수.'}
+    ];
+  }
+  function bmFit(p,i){const reasons=[];
+    if(!has('bmBudget'))reasons.push('초기 예산 미확인');else if(p.high>n('bmBudget'))reasons.push('초기비용 상한이 예산 초과');
+    if(!has('bmMonthlyBudget'))reasons.push('월 예산 미확인');else if(p.monthly>n('bmMonthlyBudget'))reasons.push('월비용 한도 초과');
+    if(i===3){if(!has('bmArea'))reasons.push('면적 확인 필요');else if(n('bmArea')<20)reasons.push('20평 미만: 공간 우선 검증');if(!has('employeeCount'))reasons.push('인력 미확인');else if(n('employeeCount')<=1)reasons.push('1인·소수 운영: 업무 증가 주의');if((n('salesCurrent')||n('monthlySales'))<20000000)reasons.push('매출·현금여력 검증 우선');}
+    return reasons.length?reasons.join(' · '):'예산 범위 내 시험 가능 (실제 견적·업무량 확인)';
+  }
+  function bmCosts(){return bmPlans().reduce((t,p,i)=>{if($('bmPick'+i).checked){t.initial+=p.high;t.monthly+=p.monthly;t.count++}return t},{initial:0,monthly:0,count:0})}
+  function bmSelection(){const c=bmCosts();return `선택 ${c.count}개 · 초기비용 상한 ${bmMoney(c.initial)} · 월비용 상한 ${bmMoney(c.monthly)}. `+(has('bmBudget')&&c.initial>n('bmBudget')?'선택 합계가 초기 예산을 초과합니다. ':'')+(has('bmMonthlyBudget')&&c.monthly>n('bmMonthlyBudget')?'선택 합계가 월 예산을 초과합니다. ':'')+'실행비용 입력은 별도이며, 아래 버튼으로 복사할 수 있습니다.'}
+  function bmScenarioHtml(){
+    const sales=n('salesCurrent')||n('monthlySales');
+    const fields=['bmVisits','bmTicket','bmMargin','bmInvest','bmRunning','bmCap','openDays','avgTicket'];
+    if(!sales||fields.some(x=>!has(x))||!n('openDays')||!n('avgTicket'))return '<div class="notice">현재 월매출·영업일·객단가와 위 6개 가정을 입력하세요. 미입력을 0원 성과로 표시하지 않습니다.</div>';
+    if(n('openDays')>31||['bmVisits','bmTicket','bmMargin'].some(x=>n(x)>100))return '<div class="notice warn">영업일은 1~31일, 증가율과 공헌이익률은 0~100%로 입력하세요.</div>';
+    const rows=[['보수',.5],['기준',1],['확대',1.5]].map(([label,f])=>{
+      const base=sales/n('avgTicket'),demand=base*n('bmVisits')/100*f,cap=n('bmCap')*n('openDays'),extra=Math.min(demand,cap),ticket=n('avgTicket')*(1+n('bmTicket')/100*f),future=(base+extra)*ticket,delta=future-sales,profit=delta*n('bmMargin')/100-n('bmRunning'),first=profit-n('bmInvest'),pay=profit>0?(n('bmInvest')/profit).toFixed(1)+'개월':'회수 불가';
+      return `<tr><td>${label}${demand>cap?' · 용량 제한':''}</td><td>${bmMoney(future)}</td><td>+${bmMoney(delta)}</td><td>${bmMoney(profit)}</td><td>${bmMoney(first)}</td><td>${pay}</td></tr>`;
+    }).join('');
+    return `<div class="bm-table"><table><thead><tr><th>시나리오</th><th>예상 월매출</th><th>증가 매출</th><th>월 증분 이익</th><th>첫달 증분 현금</th><th>단순 회수기간</th></tr></thead><tbody>${rows}</tbody></table></div><p class="bm-muted">추가 결제건수 = 기존 월 결제건수 × 증가율 (하루 추가 용량 × 영업일 이내). 예상 매출 = (기존+추가 결제건수) × 개선 객단가. 증분 이익 = 증가 매출 × 공헌이익률 − 월 추가비용. 첫달 현금 = 증분 이익 − 초기비용. 세금·감가상각·이자 미반영, 전체 순이익이 아닙니다. 성장 없이 비용만 발생하면 월 ${bmMoney(n('bmRunning'))}, 첫달 ${bmMoney(n('bmRunning')+n('bmInvest'))}의 추가 지출입니다.</p>`;
+  }
+  function bmFollowup(){const sales=n('salesCurrent')||n('monthlySales');return has('bmActualSales')&&sales?`입력 실적 변화: ${bmMoney(n('bmActualSales')-sales)} (${((n('bmActualSales')/sales-1)*100).toFixed(1)}%). 영업일·휴일·계절·가격 변동을 맞춰 비교해야 하며 컨설팅의 인과 효과로 단정하지 않습니다.`:'30일에는 객단가·결제건수·추가비용, 90일에는 공헌이익과 회수 추세를 확인합니다.'}
+  function renderBenchmark(){
+    const cat=bmCategory(),sales=n('salesCurrent')||n('monthlySales');
+    $('bmContext').textContent=`${region()||'지역 미입력'} · ${cat||'세부업종 선택 필요'} · 월매출 ${sales?bmMoney(sales):'미확인'} · ${has('bmArea')?n('bmArea')+'평':'면적 미확인'} · 직원 ${has('employeeCount')?n('employeeCount')+'명':'미확인'}`;
+    const q=encodeURIComponent(region()+' '+(cat||$('industry').value));
+    $('bmSearch').innerHTML=`<a href="https://map.naver.com/p/search/${q}" target="_blank" rel="noopener noreferrer">네이버 지도에서 후보 찾기 ↗</a><a href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener noreferrer">카카오맵 비교 ↗</a>`;
+    $('bmCandidates').innerHTML=bmCandidateHtml();
+    $('bmPlans').innerHTML=bmPlans().map((p,i)=>`<article class="bm-box ${$('bmPick'+i).checked?'selected':''}"><span class="bm-pill">${p.term}</span><h3>${p.title}</h3><p>${p.how}</p><p><b>초기 ${bmMoney(p.low)}~${bmMoney(p.high)}</b><br>월 0~${bmMoney(p.monthly)} (예산 가정)</p><p>${p.result}</p><p><b>측정</b> ${p.kpi}</p><p class="bm-warning">${bmFit(p,i)}</p><button type="button" class="btn secondary" data-bm-pick="${i}" aria-pressed="${$('bmPick'+i).checked}">${$('bmPick'+i).checked?'✓ 선택됨 · 해제':'실행과제 선택'}</button></article>`).join('')||'<div class="notice">세부 업종을 선택하면 실행과제가 표시됩니다.</div>';
+    $('bmSelection').textContent=bmSelection();$('bmOutcome').innerHTML=bmScenarioHtml();$('bmFollowup').textContent=bmFollowup();
+  }
+  function benchmarkReport(){
+    const plan=bmPlans().filter((p,i)=>$('bmPick'+i).checked);
+    return `<section><h3>10. 상권·벤치마킹 실행계획</h3><p>${esc($('bmContext').textContent)}</p><p class="small">공개정보·상담자 입력 기반 후보입니다. 실제 매출·순위는 미확인, 반경 적합성은 지도 확인 필요. 아래 적용방안은 TD KOREA의 제안입니다.</p><div class="bm-grid">${bmCandidateHtml()}</div><h3>선택 실행과제</h3>${plan.length?plan.map(p=>`<p><b>${p.term} · ${p.title}</b><br>${p.how}<br>초기 ${bmMoney(p.low)}~${bmMoney(p.high)}, 월 0~${bmMoney(p.monthly)} (견적 아님)<br>기대·검증: ${p.result} / 지표: ${p.kpi}</p>`).join(''):'<p>선택한 과제가 없습니다.</p>'}<p>${esc(bmSelection())}</p><h3>비용·기대결과 시나리오</h3><p>기준 결제건수 증가 ${esc(bmVal('bmVisits')||'미입력')}% · 객단가 증가 ${esc(bmVal('bmTicket')||'미입력')}% · 공헌이익률 ${esc(bmVal('bmMargin')||'미입력')}% · 초기비용 ${has('bmInvest')?bmMoney(n('bmInvest')):'미입력'} · 월비용 ${has('bmRunning')?bmMoney(n('bmRunning')):'미입력'}</p>${bmScenarioHtml()}<p><b>재점검일</b> ${esc(bmVal('bmReview')||'미정')}</p><p style="white-space:pre-wrap">${esc(bmVal('bmMemo'))}</p><p>${esc(bmFollowup())}</p><p class="small">수치는 상담 가정이며 성과를 보장하지 않습니다. 보수·기준·확대는 각각 증가율 가정의 0.5·1·1.5배입니다.</p></section>`;
+  }
+  $('bmRefresh').addEventListener('click',()=>{renderBenchmark();saveDraft(false)});
+  $('bmPlans').addEventListener('click',e=>{const b=e.target.closest('[data-bm-pick]');if(!b)return;const el=$('bmPick'+b.dataset.bmPick);el.checked=!el.checked;renderBenchmark();saveDraft(false)});
+  $('form').addEventListener('input',e=>{if(e.target.id==='bmImport')return;if(e.target.id==='bmCategory'||e.target.id==='industry'){for(let i=0;i<4;i++)$('bmPick'+i).checked=false}renderBenchmark();saveDraft(false)});
+  $('bmUseCosts').addEventListener('click',()=>{const c=bmCosts();$('bmInvest').value=c.initial;$('bmRunning').value=c.monthly;renderBenchmark();saveDraft(false)});
+  $('bmExample').addEventListener('click',()=>{
+    if(!confirm('현재 상담의 지역·업종·매출 및 벤치마킹 가정을 김포 한식 예시로 변경합니다. 기존 상담은 먼저 저장하세요. 계속할까요?'))return;
+    currentRecordId='';currentRecordUpdatedAt='';supportData=null;supportSearchSignature='';
+    const v={store:'예시 한식당 (가상)',sido:'경기도',sigungu:'김포시',dong:'',industry:'한식',monthlySales:30000000,salesCurrent:30000000,salesGoal:33000000,openDays:26,avgTicket:15000,employeeCount:2,bmCategory:'한식',bmArea:20,bmSeats:28,bmBudget:500000,bmMonthlyBudget:200000,bmRadius:3,bmVisits:5,bmTicket:3,bmMargin:40,bmCap:8,bmInvest:200000,bmRunning:50000};Object.entries(v).forEach(([k,x])=>$(k).value=x);updateRecordHeader('예시');renderBenchmark();saveDraft(false);
+  });
+  $('bmExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({format:'TDKOREA-DIAGNOSIS-V10',savedAt:new Date().toISOString(),form:formSnapshot()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='TD_KOREA_상담백업_'+todayISO()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+  $('bmImport').addEventListener('change',async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>2000000)throw new Error('백업 파일이 너무 큽니다.');const data=JSON.parse(await file.text());if(!['TDKOREA-V8','TDKOREA-V9','TDKOREA-DIAGNOSIS-V10','TDKOREA-GROWTH-V10'].includes(data.format)||!data.form||typeof data.form!=='object'||Array.isArray(data.form))throw new Error('지원하는 상담 백업이 아닙니다.');if(!confirm('현재 입력을 백업 내용으로 교체할까요?'))return;const clean={};document.querySelectorAll('#form input,#form select,#form textarea').forEach(el=>{if(el.id&&el.type!=='file')clean[el.id]=el.type==='checkbox'?false:''});Object.entries(data.form).forEach(([k,v])=>{if(k in clean&&(typeof v==='string'||typeof v==='boolean'||typeof v==='number'))clean[k]=v});currentRecordId='';currentRecordUpdatedAt='';supportData=null;supportSearchSignature='';applySnapshot(clean);$('report').innerHTML='<h2>백업을 불러왔습니다. 리포트를 다시 생성하세요.</h2>';updateRecordHeader('백업');saveDraft(false);toast('백업을 불러왔습니다.');}catch(err){alert(err.message)}finally{e.target.value=''}});
+
+  const v9Domains=['상품·서비스','고객응대','마케팅','구매·재고','매장·운영'];
+function v9Text(id){return $(id)?.value.trim()||''}
+function v9Num(id){return has(id)&&Number.isFinite(Number($(id).value))?Number($(id).value):null}
+function v9Mean(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:null}
+function v9Group(g){const b=[],a=[],pairs=[];let na=0;for(let j=0;j<6;j++){const i=g*6+j,x=v9Text('v9Q'+i+'B'),y=v9Text('v9Q'+i+'A');if(x==='na')na++;if(/^[1-5]$/.test(x))b.push(+x);if(/^[1-5]$/.test(y))a.push(+y);if(/^[1-5]$/.test(x)&&/^[1-5]$/.test(y))pairs.push(+y-+x)}return {g,b:v9Mean(b),a:v9Mean(a),count:b.length,after:a.length,na,delta:v9Mean(pairs),paired:pairs.length}}
+function v9ScoreHtml(){return v9Domains.map((name,g)=>{const x=v9Group(g);return `<article class="bm-box"><span class="bm-muted">${esc(name)}</span><div class="bm-stat">${x.b===null?'미확인':x.b.toFixed(1)+' / 5'}</div><div class="v9-scorebar"><span style="width:${x.b===null?0:x.b*20}%"></span></div><p class="bm-muted">진단 ${x.count}/6 · 해당 없음 ${x.na}<br>사후 ${x.a===null?'미확인':x.a.toFixed(1)+' / 5'} (${x.after}/6)<br>동일 ${x.paired}문항 변화 ${x.delta===null?'미확인':(x.delta>=0?'+':'')+x.delta.toFixed(1)+'점'}</p></article>`}).join('')}
+function v9TaskHtml(){let cost=0,monthly=0,missing=0;const blocks=[];for(let i=0;i<3;i++){const k='v9T'+i;if(!v9Text(k+'Name'))continue;for(const x of ['Cost','Monthly'])if(v9Num(k+x)===null)missing++;cost+=n(k+'Cost');monthly+=n(k+'Monthly');const target=v9Num(k+'Target'),actual=v9Num(k+'Actual'),base=v9Num(k+'Base');let result='실측 또는 목표 미입력';if(target!==null&&actual!==null)result=($(k+'Direction').value==='down'?actual<=target:actual>=target)?'목표 도달':'목표 미달';blocks.push(`<article class="bm-box"><h4>${esc(v9Text(k+'Name'))} · ${esc(v9Text(k+'Status'))}</h4><p><b>현재</b> ${esc(v9Text(k+'Asis')||'근거 미입력')}<br><b>개선</b> ${esc(v9Text(k+'Tobe')||'방법 미입력')}</p><p>${esc(v9Text(k+'Kpi')||'측정지표 미입력')} : ${base??'미입력'} → 목표 ${target??'미입력'} / 실제 ${actual??'미입력'} · ${result}</p><p>담당 ${esc(v9Text(k+'Owner')||'미정')} · 기한 ${esc(v9Text(k+'Due')||'미정')} · 초기 ${has(k+'Cost')?won(n(k+'Cost')):'미확인'} · 월 ${has(k+'Monthly')?won(n(k+'Monthly')):'미확인'} · 누적 집행 ${has(k+'Spent')?won(n(k+'Spent')):'미확인'}</p><p>증빙·판단: ${esc(v9Text(k+'Proof')||'미입력')}</p></article>`)}return `<p>등록 ${blocks.length}개 · 입력된 초기 예산 ${won(cost)} · 월 예산 ${won(monthly)}${missing?' (미입력 비용 '+missing+'개 제외)':''}${has('bmBudget')&&cost>n('bmBudget')?' · 앞서 입력한 초기 예산 초과':''}${has('bmMonthlyBudget')&&monthly>n('bmMonthlyBudget')?' · 월 예산 한도 초과':''}</p><p class="bm-muted">벤치마킹 과제와 같은 비용이면 중복 합산하지 마세요. 완료 상태와 목표 달성은 별도로 판단합니다.</p>`+blocks.join('')}
+function v9Period(side){const k='v9'+side,get=x=>v9Num(k+x),start=v9Text(k+'Start'),end=v9Text(k+'End');const invalid=[];if(start&&end&&end<start)invalid.push('종료일이 시작일보다 빠릅니다');const days=get('Days');if(days!==null&&(!Number.isInteger(days)||days<=0))invalid.push('영업일은 양의 정수로 입력하세요');if(start&&end&&end>=start&&days!==null&&days>((Date.parse(end)-Date.parse(start))/86400000+1))invalid.push('영업일이 측정기간보다 큽니다');for(const f of ['Sales','Variable','Fixed','Interest','Energy','Usage','Ad','Transactions','New','Returning','Waste'])if(get(f)!==null&&get(f)<0)invalid.push('음수 입력을 확인하세요');const sales=get('Sales'),variable=get('Variable'),fixed=get('Fixed'),interest=get('Interest');const contribution=sales!==null&&variable!==null?sales-variable:null,profit=contribution!==null&&fixed!==null?contribution-fixed:null,ratio=sales>0&&profit!==null?profit/sales*100:null,cm=sales>0&&contribution!==null?contribution/sales:null;return {get,start,end,days,invalid,sales,profit,ratio,interestRatio:sales>0&&interest!==null?interest/sales*100:null,afterInterest:profit!==null&&interest!==null?profit-interest:null,breakeven:cm>0&&fixed!==null?fixed/cm:null,breakevenReason:cm!==null&&cm<=0?'공헌이익률 0 이하':'필수값 미입력 또는 매출 0',daily:sales!==null&&days>0?sales/days:null,ticket:sales!==null&&get('Transactions')>0?sales/get('Transactions'):null}}
+function v9Fmt(v,unit='원'){return v===null?'미확인':unit==='%'?v.toFixed(2)+'%':Math.round(v).toLocaleString('ko-KR')+unit}
+function v9Change(b,a,unit='원'){if(b===null||a===null)return '미확인';if(unit==='%')return (a-b).toFixed(2)+'%p';return v9Fmt(a-b,unit)+(b===0?' · 기준 0, 증가율 미산출':' / '+((a-b)/Math.abs(b)*100).toFixed(1)+'%')}
+function v9FinanceHtml(){const b=v9Period('B'),a=v9Period('A');if(b.invalid.length||a.invalid.length)return '<div class="notice warn">'+esc([...b.invalid.map(x=>'진단 전: '+x),...a.invalid.map(x=>'사후: '+x)].join(' / '))+'</div>';const rows=[['기간 매출',b.sales,a.sales,'원'],['변동비',b.get('Variable'),a.get('Variable'),'원'],['고정 영업비용',b.get('Fixed'),a.get('Fixed'),'원'],['금융비용',b.get('Interest'),a.get('Interest'),'원'],['영업일당 매출',b.daily,a.daily,'원'],['결제 1건당 매출',b.ticket,a.ticket,'원'],['기간 영업이익',b.profit,a.profit,'원'],['영업이익률',b.ratio,a.ratio,'%'],['금융비용/매출 비율',b.interestRatio,a.interestRatio,'%'],['영업이익−금융비용',b.afterInterest,a.afterInterest,'원'],['기간 손익분기 매출',b.breakeven,a.breakeven,'원'],['에너지 요금',b.get('Energy'),a.get('Energy'),'원'],['신규 고객',b.get('New'),a.get('New'),'명'],['재방문 고객',b.get('Returning'),a.get('Returning'),'명'],['폐기 원가',b.get('Waste'),a.get('Waste'),'원']];if(v9Text('v9UsageUnit'))rows.push(['에너지 사용량',b.get('Usage'),a.get('Usage'),' '+v9Text('v9UsageUnit')]);let warnings=[];if(!v9Text('v9Vat'))warnings.push('부가세 기록 기준 미확인');if(!b.start||!b.end||!a.start||!a.end)warnings.push('측정기간 미입력: 비교 잠정');if(!v9Text('v9BEvidence')||!v9Text('v9AEvidence'))warnings.push('증빙 미입력: 자기신고 수치');if(b.days!==a.days)warnings.push('영업일 상이: 총액 외 일평균을 함께 비교');if(a.profit!==null&&a.profit<0)warnings.push('사후 영업적자: 매출 확대와 비용·유지 대안을 함께 검토');const target=v9Num('v9SalesTarget');return `<div class="notice">${esc(warnings.join(' / ')||'기간·증빙 입력됨. 내용의 정확성은 상담자가 확인하세요.')}</div><div class="bm-table"><table><thead><tr><th>지표</th><th>진단 전</th><th>사후 실제</th><th>변화</th></tr></thead><tbody>${rows.map(([name,x,y,u])=>`<tr><td>${name}</td><td>${esc(v9Fmt(x,u))}</td><td>${esc(v9Fmt(y,u))}</td><td>${esc(v9Change(x,y,u))}</td></tr>`).join('')}</tbody></table></div><p>사후 매출목표 달성도: ${target>0&&a.sales!==null?(a.sales/target*100).toFixed(1)+'%':'미산출 (양수 목표·실제 매출 필요)'}</p><p class="bm-muted">영업이익 = 매출−변동비−고정 영업비용. 이익률 = 영업이익÷매출. 손익분기 매출 = 고정 영업비용÷공헌이익률 (공헌이익률 양수일 때). 진단 전 손익분기 미산출 사유: ${b.breakeven===null?b.breakevenReason:'해당 없음'} / 사후: ${a.breakeven===null?a.breakevenReason:'해당 없음'}. 원가·비용 분류는 회계장부와 대조하세요. 비용 누락 시 실제 이익과 다릅니다. 전후 변화는 컨설팅 단독 효과를 입증하지 않습니다.</p>`}
+function v9FunnelHtml(){const rate=(num,den)=>{const a=v9Num('v9F'+num),b=v9Num('v9F'+den);return a!==null&&b>0?(a/b*100).toFixed(1)+'%':'미산출'},cost=v9Num('v9FCost'),fresh=v9Num('v9FNew'),revenue=v9Num('v9FRevenue');return `<p>유입→문의 ${rate('Inquiries','Views')} · 문의→예약 ${rate('Bookings','Inquiries')} · 예약→구매 ${rate('Purchases','Bookings')}<br>신규고객 획득비용 ${cost!==null&&fresh>0?won(Math.round(cost/fresh)):'미산출'} · 광고비 대비 귀속매출 ${cost>0&&revenue!==null?(revenue/cost*100).toFixed(1)+'%':'미산출'}</p><p class="bm-muted">분모가 0이거나 값이 없으면 미산출입니다. 전환율이 100%를 넘으면 집계 단위·예약 없는 구매·기간 차이를 확인하세요. 광고비 대비 매출 비율은 수익률이 아닙니다.</p>`}
+function renderV9(){if(!$('v9Panel'))return;$('v9Scores').innerHTML=v9ScoreHtml();$('v9TasksResult').innerHTML=v9TaskHtml();$('v9Finance').innerHTML=v9FinanceHtml();$('v9Funnel').innerHTML=v9FunnelHtml()}
+function v9Report(){renderV9();const entries=[];for(let g=0;g<5;g++){const lines=[];for(let j=0;j<6;j++){const i=g*6+j,q=$('v9Q'+i+'B').closest('.v9-question').querySelector('b').textContent;const val=side=>{const x=v9Text('v9Q'+i+side);return x==='na'?'해당 없음':x||'미확인'};lines.push(`${esc(q)} — 전 ${val('B')} / 후 ${val('A')}`)}entries.push(`<h4>${v9Domains[g]}</h4><p>${lines.join('<br>')}</p><p>근거: ${esc(v9Text('v9Evidence'+g)||'미입력')}</p>`)}return `<section class="v9-report"><h3>11. 사례 기반 역량진단·실행성과</h3><p>첨부 사례집 본문 pp.2–29의 구조를 참고한 TD KOREA 자체 30문항입니다. 원문 공식 평가표나 성과 예측모형이 아닙니다.</p><p><b>문제·희망</b> ${esc(v9Text('v9Problem'))}<br><b>원인·가설</b> ${esc(v9Text('v9Cause'))}<br><b>강점</b> ${esc(v9Text('v9Strength'))}<br><b>제약</b> ${esc(v9Text('v9Constraints'))}</p><div class="bm-grid">${v9ScoreHtml()}</div><p class="small">미확인·해당 없음 제외 단순 평균, 변화는 전후 동일 문항끼리 비교.</p><h3>진단 질문·근거</h3>${entries.join('')}<h3>실행과제와 결과</h3>${v9TaskHtml()}<h3>실제 성과 비교</h3><p>진단 전 ${esc(v9Text('v9BStart')||'미입력')}~${esc(v9Text('v9BEnd')||'미입력')}, 영업 ${esc(v9Text('v9BDays')||'미입력')}일 / 사후 ${esc(v9Text('v9AStart')||'미입력')}~${esc(v9Text('v9AEnd')||'미입력')}, 영업 ${esc(v9Text('v9ADays')||'미입력')}일<br>금액 기준: ${esc(v9Text('v9Vat')||'미확인')}<br>진단 전 근거: ${esc(v9Text('v9BEvidence'))}<br>사후 근거: ${esc(v9Text('v9AEvidence'))}</p>${v9FinanceHtml()}<p>비교 한계: ${esc(v9Text('v9CompareNote'))}</p><h3>채널 전환 분석</h3><p>${esc(v9Text('v9Channel'))} · ${esc(v9Text('v9ChannelPeriod'))}</p>${v9FunnelHtml()}<p>근거: ${esc(v9Text('v9FProof'))}</p><h3>유지·전환 검토와 결정</h3>${['v9Alt1','v9Alt2','v9Alt3','v9Alt4','v9Decision'].map((x,i)=>`<p><b>${['유지·개선','채널·상품 조정','축소·정리·전환','신규 사업','종합 의견'][i]}</b> ${esc(v9Text(x)||'미입력')}</p>`).join('')}<h3>사후관리</h3>${[30,60,90].map(k=>`<p>${k}일 예정 ${esc(v9Text('v9Review'+k)||'미정')}<br>${esc(v9Text('v9ReviewNote'+k))}</p>`).join('')}<p>점주 만족도: ${esc(v9Text('v9Satisfaction')||'미입력')} / 100 (사업성과와 별도)</p><p><b>결론·다음 행동</b> ${esc(v9Text('v9Final'))}</p><p class="small">과거 사례집의 지원금·노출 알고리즘·성과율을 현재 조건이나 예상성과로 적용하지 않았습니다. 사실확인이 안 된 수치는 증빙 확인 전까지 잠정값입니다.</p></section>`}
+$('v9Panel').addEventListener('input',()=>{renderV9();saveDraft(false)});
+$('v9Refresh').addEventListener('click',()=>{renderV9();saveDraft(false)});
+$('v9Report').addEventListener('click',generateReport);
+$('v9Suggest').addEventListener('click',()=>{const candidates=v9Domains.map((_,g)=>v9Group(g)).filter(x=>x.count>=3).sort((a,b)=>a.b-b.b).slice(0,3);if(!candidates.length){toast('역량별 6문항 중 3개 이상 평가 후 초안을 생성하세요.');return}if([0,1,2].some(i=>v9Text('v9T'+i+'Name'))&&!confirm('기존 3개 실행과제 입력을 지우고 새 초안으로 교체할까요?'))return;
+const suggestions=[['대표상품 원가·구성 표준화','상위 판매상품 3개의 원가표와 분량·작업순서를 정리하고 기본/특선 중 한 가지를 2주 시험.','상품별 공헌이익률 (%)'],['문의·예약·재방문 누락 개선','2주간 문의·예약·방문·미구매 이유를 기록하고 안내 문구와 응대순서를 정리.','문의 대비 구매전환율 (%)'],['지역 고객·채널 전환 개선','동일 세부업종 3곳의 메뉴·가격·고객 반응을 확인하고 우리 매장 대표사진·메뉴 설명을 개선. 문의 유입경로 기록.','문의 대비 구매전환율 (%)'],['발주·폐기 원가 관리','판매량·재고·폐기를 2주 기록하고 발주 단위·보관 위치를 조정.','폐기 원가 (원)'],['동선·에너지·운영비 개선','작업시간과 에너지 고지서를 확인하고 유휴시간·기기 사용을 조정. 설비 투자는 견적·회수기간 확인 후 결정.','영업일당 에너지 비용 (원)']];for(let i=0;i<3;i++){document.querySelectorAll(`[id^="v9T${i}"]`).forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value=''})}candidates.forEach((x,i)=>{const k='v9T'+i,arr=suggestions[x.g];$(k+'Name').value=arr[0];$(k+'Domain').value=x.g;$(k+'Asis').value=`${v9Domains[x.g]} ${x.b.toFixed(1)}/5 (${x.count}/6 평가). `+(v9Text('v9Evidence'+x.g)||'구체적인 관찰·증빙 보완 필요');$(k+'Tobe').value=arr[1];$(k+'Kpi').value=arr[2];$(k+'Direction').value=x.g>=3?'down':'up'});renderV9();saveDraft(false);toast('초안을 채웠습니다. 시작값·목표·담당·기한·비용을 확정하세요.');});
+
+function splitBaselineKeys(){return ['store','date','industry','businessType','opened','sido','sigungu','dong','monthlySales','salesCurrent','employeeCount','concern','openDays','avgTicket','bmCategory','bmArea','bmSeats','bmBudget','bmMonthlyBudget','v9Problem','v9Cause','v9Strength','v9Constraints','v9Hours','v9Route','v9Vat',...Array.from({length:30},(_,i)=>'v9Q'+i+'B'),...Array.from({length:5},(_,i)=>'v9Evidence'+i),...['Start','End','Days','Evidence','Sales','Variable','Fixed','Interest','Energy','Usage','Ad','Transactions','New','Returning','Waste'].map(k=>'v9B'+k)]}
+function splitDownload(data,name){const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function splitPayload(){const source=formSnapshot(),data={};splitBaselineKeys().forEach(k=>{if(k in source)data[k]=source[k]});if(source.monthlySales){data.salesCurrent=source.monthlySales;if(!data.v9BSales)data.v9BSales=source.monthlySales}return {format:'TDKOREA-DIAGNOSIS-V10',kind:'growth-handoff',savedAt:new Date().toISOString(),form:data}}
+function splitReset(){document.querySelectorAll('#form input,#form select,#form textarea').forEach(el=>{if(el.type==='file')return;if(el.type==='checkbox')el.checked=false;else if(el.tagName==='SELECT')el.selectedIndex=0;else el.value=''});currentRecordId='';currentRecordUpdatedAt='';supportData=null;supportSearchSignature='';$('date').value=todayISO();$('report').innerHTML='<h2>새 입력으로 리포트를 생성하세요.</h2>';updateRecordHeader('새 상담')}
+async function splitImportFile(file,whole=false){if(!file)return;if(file.size>2000000)throw Error('2MB 이하 상담 JSON을 선택하세요.');const data=JSON.parse(await file.text());if(!['TDKOREA-V8','TDKOREA-V9','TDKOREA-DIAGNOSIS-V10','TDKOREA-GROWTH-V10'].includes(data.format)||!data.form||typeof data.form!=='object'||Array.isArray(data.form))throw Error('지원하는 상담 JSON 형식이 아닙니다.');if(!confirm('현재 입력을 새 상담으로 교체합니다. 저장하지 않은 내용은 사라집니다. 계속할까요?'))return;const allowed=new Set(whole?Object.keys(formSnapshot()):splitBaselineKeys()),clean={};Object.entries(data.form).forEach(([k,v])=>{if(allowed.has(k)&&['string','number','boolean'].includes(typeof v))clean[k]=v});if(!whole&&clean.monthlySales&&!clean.salesCurrent)clean.salesCurrent=clean.monthlySales;splitReset();applySnapshot(clean);renderBenchmark();renderV9();splitRefresh();saveDraft(false);$('splitTransferStatus').textContent=(whole?'상담 백업':'진단정보')+' 불러오기 완료 · '+($('store').value||'사업장명 미입력')+' · 저장 버튼으로 이 상담을 보관하세요.';toast('불러오기 완료');}
+function splitRefresh(){if(SPLIT_MODE==='growth'&&$('splitSummary'))$('splitSummary').innerHTML=`<p><b>핵심 문제</b> ${esc(v9Text('v9Problem')||v9Text('concern')||'진단정보를 불러오거나 기본정보를 입력하세요.')}</p><p><b>강점</b> ${esc(v9Text('v9Strength')||'미확인')}<br><b>제약</b> ${esc(v9Text('v9Constraints')||'미확인')}</p><div class="bm-grid">${v9ScoreHtml()}</div>`;if(SPLIT_MODE==='diagnosis')$('v9Scores').innerHTML=v9Domains.map((name,g)=>{const x=v9Group(g);return `<article class="bm-box"><b>${name}</b><div class="bm-stat">${x.b===null?'미확인':x.b.toFixed(1)+' / 5'}</div><p class="bm-muted">진단 ${x.count}/6 · 해당 없음 ${x.na}</p></article>`}).join('')}
+function splitDiagnosisReport(){return `<section><h3>현재 역량과 문제 근거</h3><p>핵심 문제: ${esc(v9Text('v9Problem')||'미입력')}<br>원인·가설: ${esc(v9Text('v9Cause')||'미입력')}<br>강점: ${esc(v9Text('v9Strength')||'미입력')}<br>제약: ${esc(v9Text('v9Constraints')||'미입력')}</p>${v9Domains.map((name,g)=>{const x=v9Group(g);return `<p><b>${name}: ${x.b===null?'미확인':x.b.toFixed(1)+'/5'} (${x.count}/6 평가)</b><br>근거: ${esc(v9Text('v9Evidence'+g)||'미입력')}</p>`}).join('')}<p>30문항은 사례집 구조를 참고한 TD KOREA 자체 상담 도구입니다. 미확인·해당 없음은 점수에서 제외합니다.</p><p>다음 단계: 진단정보 내보내기 → 성장플랜에서 불러오기 → 벤치마킹·실행과제·성과 확인.</p></section>`}
+function splitCleanReport(){if(SPLIT_MODE!=='diagnosis')return;[...$('report').querySelectorAll('section')].forEach(s=>{if(/^(1\. 매출 목표|6\. 목표매출|9\. 후속관리)/.test(s.querySelector('h3')?.textContent||''))s.remove()})}
+function splitGrowthReport(){renderBenchmark();renderV9();$('report').innerHTML=`<h2>${esc($('store').value||'사업장')} 성장 실행·성과 리포트</h2><p>${esc(region())} · ${esc(bmCategory()||$('industry').value)} · ${esc($('date').value)}</p>${benchmarkReport()}${v9Report()}`;const q=[...$('report').querySelectorAll('h3')].find(x=>x.textContent==='진단 질문·근거');if(q){let p=q.nextElementSibling;while(p&&!(p.tagName==='H3')){const next=p.nextElementSibling;p.remove();p=next}q.remove()}saveDraft(false);showStep(7)}
+$('form').addEventListener('input',()=>{renderV9();splitRefresh()});
+if($('splitExport'))$('splitExport').addEventListener('click',()=>splitDownload(splitPayload(),'TD_KOREA_진단정보_'+todayISO()+'.json'));
+if($('splitImport'))$('splitImport').addEventListener('change',async e=>{try{await splitImportFile(e.target.files[0])}catch(err){alert(err.message)}finally{e.target.value=''}});
+if($('splitBackup'))$('splitBackup').addEventListener('click',()=>splitDownload({format:'TDKOREA-DIAGNOSIS-V10',kind:'full-backup',form:formSnapshot()},'TD_KOREA_현재진단_상담백업.json'));
+if($('splitFullImport'))$('splitFullImport').addEventListener('change',async e=>{try{await splitImportFile(e.target.files[0],true)}catch(err){alert(err.message)}finally{e.target.value=''}});
+if($('splitGrowthReport'))$('splitGrowthReport').addEventListener('click',splitGrowthReport);
+
+  restoreDraft();
+  splitRefresh();
+  renderBenchmark();
+  renderV9();
+  splitRefresh();
+  updateRecordHeader("");
+  if(false){
+    navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  }
+  try{
+    const cached = JSON.parse(localStorage.getItem("tdkorea_support_result_v6")||"null");
+    if(!WEBSITE_STATIC_PREVIEW && cached && cached.data){
+      supportSearchSignature = cached.signature || "";
+      renderSupportResults(cached.data);
+    }
+  }catch(e){}
+})();
+</script>
+
+</body></html>
