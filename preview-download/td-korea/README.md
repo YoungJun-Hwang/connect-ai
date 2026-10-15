@@ -8,7 +8,7 @@ POS·렌탈제품·인터넷 장비를 강조한 매장 이미지를 적용한 �
 
 [index.html 다운로드](https://github.com/YoungJun-Hwang/connect-ai/raw/refs/heads/codex/browser-preview-download/preview-download/td-korea/index.html)
 
-다운로드한 HTML을 Chrome 또는 Edge에서 열면 됩니다. 사진과 스타일, 메뉴 동작이 HTML 안에 포함되어 별도 설치가 필요하지 않습니다.
+다운로드한 HTML을 Chrome 또는 Edge에서 열면 됩니다. 사진과 스타일, 메뉴 동작이 HTML 안에 포함되어 별도 설치가 필요하지 않습니다. Pretendard 웹폰트는 인터넷 연결 시 불러오며, 연결이 없으면 기기의 한국어 기본 글꼴로 표시합니다.
 
 ## 브라우저 미리보기
 
@@ -48,3 +48,23 @@ POS·렌탈제품·인터넷 장비를 강조한 매장 이미지를 적용한 �
 [독립된 V10 HTML 다운로드](https://github.com/YoungJun-Hwang/connect-ai/raw/refs/heads/codex/browser-preview-download/preview-download/td-korea/diagnosis-v10.html)
 
 최신 제공 파일 TD_KOREA_현재매장진단_V10.html을 기준으로 연결했습니다. 미리보기용으로 잘못된 manifest 경로를 제거하고, 연결되지 않은 지원사업 API는 연결 전으로 안내합니다. 입력폼·평가·리포트·백업 기능은 유지했습니다. 지원사업 조회·담당자 접수의 서버 연결은 별도 작업입니다.
+
+
+## 색상·글꼴 개정 · 2026-10-16
+
+- 글꼴: Pretendard Variable. 제목 650–720, 본문 400, 버튼 550–600 굵기로 구분했습니다.
+- 메인 네이비: #17283D / 강조 블루: #315C91
+- 본문: #1C2B3D / 보조 본문: #5D6B7C
+- 배경: #FFFFFF, #F5F7FA / 구분선: #DCE3EC
+- 홈페이지와 내장·독립 V10 진단 화면에 동일한 글꼴과 색상을 적용했습니다.
+- 모바일 진단 입력 필드는 16px, 버튼·메뉴는 용도에 맞는 크기와 굵기로 정리했습니다.
+- 제목·본문·버튼·진단 상단·푸터의 주요 색상 조합은 4.5:1 이상의 글자 대비를 확인했습니다. 배경 사진 위의 실제 픽셀 대비와 브라우저 표시 상태는 별도 시각 검증 대상입니다.
+- POS 사진, V10 진단 진입 링크 9개, 진단 입력·작업 요소 344개와 JavaScript 동작 코드는 유지했습니다.
+
+웹폰트 공식 출처:
+https://github.com/orioncactus/pretendard
+
+폰트 스타일 주소:
+https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css
+
+폰트는 공식 CDN을 통해 불러옵니다. 이미지와 진단 화면은 HTML에 포함되며, 폰트 네트워크 연결이 없어도 시스템 글꼴로 기능을 이용할 수 있습니다. 실제 브라우저의 폰트 표시·레이아웃은 직접 검증하지 못했습니다.
