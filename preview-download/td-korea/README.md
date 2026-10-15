@@ -85,3 +85,22 @@ https://github.com/sun-typeface/SUIT
 폰트는 파일을 복제·수정해 저장하지 않고, 고정된 버전의 CDN 주소로 불러옵니다. 설립체의 지적재산권은 스스로넷과 해당 제작자에게 있습니다. 폰트 자체의 유료 판매·수정·재배포를 하지 않습니다. SUIT는 SIL OFL을 따릅니다.
 
 최초 표시 성능을 위해 설립체를 미리 불러오며, 두 서체 모두 font-display: swap을 사용합니다. 인터넷 연결이 없거나 CDN을 불러올 수 없으면 기기의 한국어 기본 글꼴로 표시됩니다. 사진·진단 화면은 계속 HTML에 포함됩니다.
+
+
+## TD KOREA 로고 변경
+
+차콜 단색의 TD 모노그램과 간결한 영문 워드마크를 결합한 투명 PNG 로고입니다.
+
+- 상단과 V10 진단 헤더: 차콜 로고
+- 어두운 푸터: 같은 로고를 흰색으로 표시
+- 홈페이지 기본 크기: 228 × 42px / 모바일: 194 × 36px
+- 화면 크기에 맞춰 로고 주변의 투명 여백을 조정해 표시합니다.
+- 로고의 접근성 이름은 TD KOREA이며, 홈페이지의 로고를 누르면 상단으로 이동합니다.
+- 다운로드용 HTML에도 로고를 포함해 별도 이미지 파일 없이 표시합니다.
+- 웹폰트 로딩 여부에 관계없이 같은 로고 형태로 표시합니다.
+- 기존 제목 서체, 색상, POS 이미지, 무료진단 연결, V10 기능은 유지했습니다.
+- JavaScript 문법과 기존 동작 코드 유지, 내장·독립 V10 일치, 입력·작업 요소 ID를 확인했습니다. 실제 브라우저 화면은 직접 검증하지 못했습니다.
+
+[투명 배경 로고 PNG 다운로드](https://github.com/YoungJun-Hwang/connect-ai/raw/refs/heads/codex/browser-preview-download/preview-download/td-korea/assets/td-korea-logo.png)
+
+원본 파일: assets/td-korea-logo.png
